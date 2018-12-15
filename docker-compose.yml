@@ -1,0 +1,17 @@
+version: "2"
+services:
+  users-microservice:
+    container_name: users-microserice
+    restart: always
+    build: './users-microservice'
+    ports:
+      - "8080:8080"
+    links:
+      - mongo-users
+      - redis
+  mongo-users:
+    container_name: mongo-users
+    image: mongo
+  redis:
+    container_name: redis
+    image: redis
