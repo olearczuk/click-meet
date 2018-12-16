@@ -23,8 +23,7 @@ async function create(userParams) {
     
     const user = new User(userParams);
 
-    if (userParams.password)
-        user.hash = bcrypt.hashSync(userParams.password, 10);
+    user.hash = bcrypt.hashSync(userParams.password, 10);
         
     await user.save();
 }
