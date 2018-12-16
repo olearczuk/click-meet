@@ -1,4 +1,8 @@
-version: "2"
+version: "3"
+
+networks:
+  internal:
+
 services:
   users-microservice:
     container_name: users-microserice
@@ -9,9 +13,45 @@ services:
     links:
       - mongo-users
       - redis
+    networks:
+      internal:
+        aliases:
+          - users-microservice
+
+  availability-microservice:
+    container_name: availability-microserice
+    restart: always
+    build: './availability-microservice'
+    ports:
+      - "9010:9010"
+    links:
+      - mongo-availability
+      - redis
+    networks:
+      internal:
+        aliases:
+          - availability-microservice
+
+  mongo-availability:
+    container_name: mongo-availability
+    image: mongo
+    networks:
+      internal:
+        aliases:
+          - mongo-availability
+
   mongo-users:
     container_name: mongo-users
     image: mongo
+    networks:
+      internal:
+        aliases:
+          - mongo-users
+          
   redis:
     container_name: redis
     image: redis
+    networks:
+      internal:
+        aliases:
+          - redis
