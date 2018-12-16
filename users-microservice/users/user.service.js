@@ -16,6 +16,8 @@ async function authenticate({ username, password }) {
 }
 
 async function create(userParams) {
+    if (!userParams.password)
+        throw "Password required";
     if (await User.findOne({ username: userParams.username}))
         throw 'Username "' + userParams.username + '" is already taken';
     

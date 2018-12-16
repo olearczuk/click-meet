@@ -1,11 +1,11 @@
 const router = require('express').Router();
 const userService = require('./user.service');
-const userPermissions = require('./user.permissions');
+const userMiddleware = require('./user.middleware');
 
 router.post('/login', login);
 router.post('/register', register);
-router.post('/logout', userPermissions.isLoggedIn,logout);
-router.get('/:id/info', userPermissions.isLoggedIn, info);
+router.post('/logout', userMiddleware.isLoggedIn,logout);
+router.get('/:id/info', userMiddleware.isLoggedIn, info);
 
 module.exports = router;
 

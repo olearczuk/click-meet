@@ -12,7 +12,7 @@ const userSchema = new Schema({
             message: '{VALUE} is not a valid email',
             isAsync: false,
         }, 
-        required: true},
+        required: true },
     professor: { type: Boolean, default: false },
 });
 
