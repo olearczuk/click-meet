@@ -2,8 +2,8 @@ const router = require('express').Router();
 const userService = require('./user.service');
 const userMiddleware = require('./user.middleware');
 
-router.post('/login', login);
-router.post('/register', register);
+router.post('/login', userMiddleware.isNotLoggedIn,login);
+router.post('/register', userMiddleware.isNotLoggedIn, register);
 router.post('/logout', userMiddleware.isLoggedIn,logout);
 router.get('/:id/info', userMiddleware.isLoggedIn, info);
 
@@ -14,8 +14,10 @@ function login(req, res, next) {
         .then(user => {
             if (!user)
                 throw 'Incorrect input'
-            if (!req.session.user)
-                req.session.user = user.id;
+                
+            req.session.user = user.id;
+            req.session.is_professor = user.professor;
+
             res.json({
                 user: req.session.user
             });
