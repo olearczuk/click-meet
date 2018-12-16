@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const userService = require('./user.service');
+const userPermissions = require('./user.permissions');
 
 router.post('/login', login);
 router.post('/register', register);
-router.post('/logout', logout);
+router.post('/logout', userPermissions.isLoggedIn,logout);
+router.get('/:id/info', userPermissions.isLoggedIn, info);
 
 module.exports = router;
 
@@ -33,4 +35,17 @@ function logout(req, res, next) {
             res.json({});
         });
     }
+}
+
+function info(req, res, next) {
+    userService.findById(req.params.id)
+        .then(user => {
+            if (!user)
+                throw 'User not found';
+            res.json({
+                username: user.username,
+                type: user.professor ? 'professor' : 'student',
+            });
+        })
+        .catch(err => next(err));
 }
