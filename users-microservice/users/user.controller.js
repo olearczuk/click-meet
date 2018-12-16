@@ -11,7 +11,7 @@ function login(req, res, next) {
     userService.authenticate(req.body)
         .then(user => {
             if (!user)
-                return res.status(400).json({ message: 'Incorrect input'});
+                throw 'Incorrect input'
             if (!req.session.user)
                 req.session.user = user.id;
             res.json({
