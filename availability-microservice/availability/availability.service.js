@@ -6,6 +6,7 @@ module.exports = {
     professorAvailability,
     deleteAvailability,
     getAvailability,
+    availableProfessors,
 }
 
 async function createAvailability(queryParams) {
@@ -16,16 +17,19 @@ async function createAvailability(queryParams) {
     if (queryParams.start_hour >= queryParams.end_hour)
         throw "Malformed time frame";
 
+    if (queryParams.start_hour > 60 * 24 || queryParams.end_hour < 0)
+        throw "Malformed hours - should be between 0 and 1440"
+
     if (queryParams.day < 0 || queryParams.day > 4)
-        throw "Malformed time should be in [0, 4]"
+        throw "Malformed time  - should be in [0, 4]"
 
     let availability = await Availability.
         findOne({$and: [
             {professorId: ObjectId(queryParams.professorId)},
             {day: queryParams.day},
-            {$or: [
-                {start_hour : { $in: [queryParams.start_hour, queryParams.end_hour]}},
-                {end_hour : { $in: [queryParams.start_hour, queryParams.end_hour]}},
+            {$and: [
+                {start_hour : { $lt: queryParams.end_hour }},
+                {end_hour : { $gt: queryParams.start_hour }},
             ]}
         ]});
     if (availability)
@@ -44,4 +48,15 @@ async function deleteAvailability(id) {
 
 async function getAvailability(id) {
     return await Availability.findById(ObjectId(id));
+}
+
+async function availableProfessors(query) {
+    return await Availability.
+        find({$and: [
+                {day: query.day},
+                {$and: [
+                    {start_hour : { $gte: query.start_hour}},
+                    {end_hour : { $lte: query.end_hour}},
+                ]}
+        ]});
 }

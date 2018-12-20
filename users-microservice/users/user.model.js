@@ -3,7 +3,7 @@ const isEmail = require('validator').isEmail;
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    username: { type: String, unique: true, required: true },
+    username: { type: String, required: true },
     hash: { type: String, required: true },
     email: { 
         type: String, 
@@ -12,7 +12,7 @@ const userSchema = new Schema({
             message: '{VALUE} is not a valid email',
             isAsync: false,
         }, 
-        required: true },
+        required: true, unique: true },
     professor: { type: Boolean, default: false },
 });
 
