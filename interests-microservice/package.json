@@ -1,0 +1,25 @@
+{
+  "name": "interests-microservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Szymon Olearczuk",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "client-sessions": "^0.8.0",
+    "connect-redis": "^3.3.0",
+    "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "mongoose": "^5.4.0",
+    "node-fetch": "^2.3.0",
+    "redis": "^2.8.0",
+    "rootpath": "^0.1.2",
+    "validator": "^10.9.0"
+  }
+}

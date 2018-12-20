@@ -32,6 +32,28 @@ services:
         aliases:
           - availability-microservice
 
+  interests-microservice:
+    container_name: interests-microserice
+    restart: always
+    build: './interests-microservice'
+    ports:
+      - "9020:9020"
+    links:
+      - mongo-interests
+      - redis
+    networks:
+      internal:
+        aliases:
+          - interests-microservice
+
+  mongo-interests:
+    container_name: mongo-interests
+    image: mongo
+    networks:
+      internal:
+        aliases:
+          - mongo-interests
+
   mongo-availability:
     container_name: mongo-availability
     image: mongo
