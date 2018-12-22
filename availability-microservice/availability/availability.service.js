@@ -5,7 +5,6 @@ module.exports = {
     createAvailability,
     professorAvailability,
     deleteAvailability,
-    getAvailability,
     availableProfessors,
 }
 
@@ -34,20 +33,27 @@ async function createAvailability(queryParams) {
         ]});
     if (availability)
         throw "Conflicting availability already exists";
-    availability = new Availability(queryParams);
-    return await availability.save();
+    availability = await new Availability(queryParams).save();
+    return mapAvailability(availability);
+}
+
+function mapAvailability(availability) {
+    return {
+        id: availability.id,
+        start_hour: availability.start_hour,
+        end_hour: availability.end_hour,
+        day: availability.day,
+    }
 }
 
 async function professorAvailability(professorId) {
-    return await Availability.find({ professorId: ObjectId(professorId) });
+    let availability = await Availability.find({ professorId: ObjectId(professorId) });
+    return availability.map(mapAvailability);
 }
 
 async function deleteAvailability(id) {
-    return await Availability.findByIdAndDelete(ObjectId(id));
-}
-
-async function getAvailability(id) {
-    return await Availability.findById(ObjectId(id));
+    let availability = await Availability.findByIdAndDelete(ObjectId(id));
+    return availability.map(mapAvailability);
 }
 
 async function availableProfessors(query) {
