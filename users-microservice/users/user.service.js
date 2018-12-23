@@ -6,6 +6,7 @@ module.exports = {
     authenticate,
     create,
     findById,
+    getProfessors,
 }
 
 async function authenticate({ username, password }) {
@@ -31,4 +32,9 @@ async function create(userParams) {
 async function findById(id) {
     id = mongoose.Types.ObjectId(id);
     return await User.findById(id);
+}
+
+async function getProfessors() {
+    let professors = await User.find({ professor: true });
+    return professors.map(prof => prof.id);
 }

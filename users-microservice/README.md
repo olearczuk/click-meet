@@ -8,3 +8,4 @@ Microservice used to handle users authentication and authorization
 | POST | /login | username, password | authenticates + creates session |
 | POST | /logout | - | destroys session |
 | GET | /id/info | - | user's username and type (professor/student) |
+| GET | /professors | - | list of registered professors |

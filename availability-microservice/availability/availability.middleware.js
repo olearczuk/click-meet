@@ -1,5 +1,4 @@
 const availabilityService = require('./availability.service');
-const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
     isLoggedIn,
@@ -16,20 +15,18 @@ function isLoggedIn(req, res, next) {
 }
 
 function isProfessor(req, res, next) {
-    if (!req.session.user || !req.session.is_professor)
-        return res.status(403).json({
-            message: 'You need to be logged in as a professor',
-        });
-    next();
+    isLoggedIn(req, res, () => {
+        if (!req.session.is_professor)
+            return res.status(403).json({
+                message: 'You need to be logged in as a professor'
+            })
+        next();
+    });
 }
 
 function isProfessorAndCreator(req, res, next) {
-    if (!req.session.user || !req.session.is_professor)
-        return res.status(403).json({
-            message: 'You need to be logged in as a professor',
-        });
-
-    availabilityService.getAvailability(req.params.id)
+    isProfessor(req, res, () => {
+        availabilityService.getAvailability(req.params.id)
         .then(availability => {
             if (!availability)
                 throw "Availability not found"
@@ -40,5 +37,6 @@ function isProfessorAndCreator(req, res, next) {
                 })
 
             next();
-        })
+        });
+    });
 }   

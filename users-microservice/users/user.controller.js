@@ -2,10 +2,11 @@ const router = require('express').Router();
 const userService = require('./user.service');
 const userMiddleware = require('./user.middleware');
 
-router.post('/login', userMiddleware.isNotLoggedIn,login);
+router.post('/login', userMiddleware.isNotLoggedIn, login);
 router.post('/register', userMiddleware.isNotLoggedIn, register);
-router.post('/logout', userMiddleware.isLoggedIn,logout);
+router.post('/logout', userMiddleware.isLoggedIn, logout);
 router.get('/:id/info', userMiddleware.isLoggedIn, info);
+router.get('/professors', userMiddleware.isLoggedIn, getProfessors)
 
 module.exports = router;
 
@@ -48,6 +49,16 @@ function info(req, res, next) {
                 username: user.username,
                 type: user.professor ? 'professor' : 'student',
             });
+        })
+        .catch(err => next(err));
+}
+
+function getProfessors(req, res, next) {
+    userService.getProfessors()
+        .then(professors => {
+            res.json({
+                professors: professors,
+            })
         })
         .catch(err => next(err));
 }
