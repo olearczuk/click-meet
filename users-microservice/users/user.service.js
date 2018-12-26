@@ -22,6 +22,9 @@ async function create(userParams) {
     if (await User.findOne({ username: userParams.username}))
         throw 'Username "' + userParams.username + '" is already taken';
     
+    if (await User.findOne({ email: userParams.email}))
+        throw 'Email "' + userParams.email + '" is already taken';
+
     const user = new User(userParams);
 
     user.hash = bcrypt.hashSync(userParams.password, 10);
