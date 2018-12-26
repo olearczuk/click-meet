@@ -1,0 +1,16 @@
+<div class="login-page">
+  <h1>click & meet</h1>
+  <form (ngSubmit)="onSubmit()" #login="ngForm" class="login-container">
+    <div class="form-group">
+      <input type="text" id="username" required [(ngModel)]="userModel.username" name="username">
+      <label for="username">Username</label>
+    </div>
+    <div class="form-group">
+      <input type="password" id="password" required [(ngModel)]="userModel.password" name="password">
+      <label for="password">Password</label>
+    </div>
+    <button type="submit" [disabled]="!login.form.valid">▶</button>
+    <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
+  </form>
+  <div class="footer"> Don't have an account? <a routerLink="/register">Register here</a>!</div>
+</div>

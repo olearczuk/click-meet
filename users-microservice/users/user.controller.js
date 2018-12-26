@@ -3,6 +3,7 @@ const userService = require('./user.service');
 const userMiddleware = require('./user.middleware');
 
 router.post('/login', userMiddleware.isNotLoggedIn, login);
+router.get('/login', isLoggedIn);
 router.post('/register', userMiddleware.isNotLoggedIn, register);
 router.post('/logout', userMiddleware.isLoggedIn, logout);
 router.get('/:id/info', userMiddleware.isLoggedIn, info);
@@ -20,10 +21,13 @@ function login(req, res, next) {
             req.session.is_professor = user.professor;
 
             res.json({
-                user: req.session.user
+                id: req.session.user,
+                username: user.username,
+                email: user.email,
+                professor: user.professor
             });
         })
-        .catch(err => next(err)); 
+        .catch(err => next(err));
 }
 
 function register(req, res, next) {
@@ -37,6 +41,25 @@ function logout(req, res, next) {
         req.session.destroy(function (done) {
             res.json({});
         });
+    }
+}
+
+function isLoggedIn(req, res, next) {
+    if (req.session.user) {
+        userService.findById(req.session.user)
+            .then(user => {
+                if (!user)
+                    throw 'User not found';
+                res.json({
+                    id: req.session.user,
+                    username: user.username,
+                    email: user.email,
+                    professor: user.professor
+                })
+            })
+            .catch(err => next(err));
+    } else {
+        res.json({});
     }
 }
 

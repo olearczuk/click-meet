@@ -1,0 +1,31 @@
+<div class="register-page">
+  <h1>click&meet</h1>
+  <form (ngSubmit)="onSubmit()" #register="ngForm" class="register-container" [hidden]="submitted">
+    <div class="form-group">
+      <input type="text" id="username" required [(ngModel)]="registerUserFormModel.username" name="username">
+      <label for="username">Username</label>
+    </div>
+
+    <div class="form-group">
+      <input type="password" id="password" required [(ngModel)]="registerUserFormModel.password" name="password">
+      <label for="password">Password</label>
+    </div>
+
+    <div class="form-group">
+      <input type="text" id="email" required [(ngModel)]="registerUserFormModel.email" name="email">
+      <label for="email">Email</label>
+    </div>
+
+    <div class="form-group">
+      <input type="checkbox" id="professor" [(ngModel)]="registerUserFormModel.professor" name="professor">
+      <label for="professor">Are you a professor? </label>
+    </div>
+
+    <button type="submit" [disabled]="!register.form.valid">Submit</button>
+    <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
+  </form>
+  <div class="register-container" [hidden]="!submitted">
+    You've successfully registered as {{registerUserFormModel.username}}.
+    Now you can <a routerLink="/">log in</a>.
+  </div>
+</div>

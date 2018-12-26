@@ -1,0 +1,6 @@
+<div *ngIf="!!currentUser?.id">
+  <app-dashboard [currentUser]="currentUser"></app-dashboard>
+</div>
+<div *ngIf="currentUser && !currentUser.id">
+  <app-login></app-login>
+</div>
