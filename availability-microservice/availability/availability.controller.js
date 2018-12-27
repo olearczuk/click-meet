@@ -1,11 +1,27 @@
 const router = require('express').Router();
+const { check, validationResult } = require('express-validator/check');
 const availabilityService = require('./availability.service');
 const availabilityMiddleware = require('./availability.middleware');
 
-router.get('/professor/:professorId', availabilityMiddleware.isLoggedIn, professorAvailability);
-router.get('/', availabilityMiddleware.isLoggedIn, availableProfessors);
-router.put('/', availabilityMiddleware.isProfessor, createAvailability);
-router.delete('/:id', availabilityMiddleware.isProfessorAndCreator, deleteAvailability);
+router.get('/professor/:professorId', [
+    check('professorId').isMongoId(),
+], availabilityMiddleware.checkValidationErrors, availabilityMiddleware.isLoggedIn, professorAvailability);
+
+router.get('/', [
+    check('day').isInt({ min: 0, max: 4 }),
+    check('start_hour').isInt({ min: 0, max: 24 * 60 - 1}),
+    check('end_hour').isInt({ min: 0, max: 24 * 60 - 1}),
+], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isLoggedIn, availableProfessors);
+
+router.put('/', [
+    check('day').isInt({ min: 0, max: 4 }),
+    check('start_hour').isInt({ min: 0, max: 24 * 60 - 1}),
+    check('end_hour').isInt({ min: 0, max: 24 * 60 - 1}),
+], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isProfessor, createAvailability);
+
+router.delete('/:id', [
+    check('id').isMongoId(),
+], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isProfessorAndCreator, deleteAvailability);
 
 module.exports = router;
 
@@ -45,3 +61,4 @@ function deleteAvailability(req, res, next) {
         })
         .catch(err => next(err));
 }
+

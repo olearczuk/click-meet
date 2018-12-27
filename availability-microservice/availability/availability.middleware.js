@@ -1,9 +1,11 @@
 const availabilityService = require('./availability.service');
+const { validationResult } = require('express-validator/check');
 
 module.exports = {
     isLoggedIn,
     isProfessor,
     isProfessorAndCreator,
+    checkValidationErrors,
 }
 
 function isLoggedIn(req, res, next) {
@@ -42,3 +44,17 @@ function isProfessorAndCreator(req, res, next) {
             });
     });
 }   
+
+function checkValidationErrors(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let message = "Parameters with wrong values: ";
+        errors.array().forEach((el, index, arr) => {
+            message += el.param;
+            if (index < arr.length - 1)
+                message += ', ';
+        });
+        return res.status(400).json({ message: message });
+    }
+    next();
+}

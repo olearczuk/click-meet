@@ -17,12 +17,6 @@ async function createAvailability(queryParams) {
     if (queryParams.start_hour >= queryParams.end_hour)
         throw "Malformed time frame";
 
-    if (queryParams.start_hour > 60 * 24 || queryParams.end_hour < 0)
-        throw "Malformed hours - should be between 0 and 1440"
-
-    if (queryParams.day < 0 || queryParams.day > 4)
-        throw "Malformed time  - should be in [0, 4]"
-
     let availability = await Availability.
         findOne({$and: [
             {professorId: ObjectId(queryParams.professorId)},
@@ -35,26 +29,17 @@ async function createAvailability(queryParams) {
     if (availability)
         throw "Conflicting availability already exists";
     availability = await new Availability(queryParams).save();
-    return mapAvailability(availability);
-}
-
-function mapAvailability(availability) {
-    return {
-        id: availability.id,
-        start_hour: availability.start_hour,
-        end_hour: availability.end_hour,
-        day: availability.day,
-    }
+    return availability;
 }
 
 async function professorAvailability(professorId) {
     let availability = await Availability.find({ professorId: ObjectId(professorId) });
-    return availability.map(mapAvailability);
+    return availability;
 }
 
 async function deleteAvailability(id) {
     let availability = await Availability.findByIdAndDelete(ObjectId(id));
-    return availability.map(mapAvailability);
+    return availability;
 }
 
 async function availableProfessors(query) {
