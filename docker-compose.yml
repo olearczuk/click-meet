@@ -55,6 +55,8 @@ services:
     links:
       - mongo-reservations
       - redis
+      - users-microservice
+      - availability-microservice
     networks:
       internal:
         aliases:

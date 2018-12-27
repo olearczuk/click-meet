@@ -2,18 +2,16 @@ const router = require('express').Router()
 const reservationService = require('./reservation.service');
 const reservationMiddleware = require('./reservation.middleware');
 
-router.put('/student', reservationMiddleware.isStudent, createStudentsReservation);
-router.put('/professor', reservationMiddleware.isProfessor, createProfessorsReservation);
+router.put('/student', reservationMiddleware.isStudent, reservationMiddleware.isProfessorId, reservationMiddleware.isProfessorAvailable, createStudentsReservation);
+router.put('/professor', reservationMiddleware.isProfessor, reservationMiddleware.isProfessorAvailable, createProfessorsReservation);
 router.get('/:id', reservationMiddleware.isLoggedIn, getReservation);
 router.delete('/:id', reservationMiddleware.isLoggedInAndParticipant, deleteReservation);
 router.get('/professor/:professorId', reservationMiddleware.isLoggedIn, getProfessorsReservations);
-router.get('/', reservationMiddleware.isLoggedIn, getOwnReservations);
+router.get('/personal', reservationMiddleware.isLoggedIn, getOwnReservations);
+router.get('/', reservationMiddleware.isLoggedIn, getBusyProfessors);
 
 module.exports = router
 
-// TODO
-// 1. Check if professorId truly belongs to a professor (users-microservice)
-// 2. Check if professor is available in such day in such hours (availability-microservice)
 function createStudentsReservation(req, res, next) {
     reservationService.createReservation({...req.body, studentId: req.session.user})
         .then(reservation =>res.status(201).json({ id: reservation.id }))
@@ -63,6 +61,14 @@ function getOwnReservations(req, res, next) {
     reservationService.getOwnReservations(req.session.user, req.query.startTime, req.query.endTime)
         .then(reservations => res.status(200).json({
             reservations: reservations.map(res => res.id)
+        }))
+        .catch(err => next(err));
+}
+
+function getBusyProfessors(req, res, next) {
+    reservationService.getBusyProfessors(req.query.startTime, req.query.endTime)
+        .then(professors => res.status(200).json({
+            professors: professors
         }))
         .catch(err => next(err));
 }

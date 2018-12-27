@@ -7,15 +7,14 @@ module.exports = {
     deleteReservation,
     getProfessorsReservations,
     getOwnReservations,
+    getBusyProfessors,
 }
-// TODO
-// should startTime and endTime occur in the same day?
+
 async function createReservation(body) {
     let professorId = ObjectId(body.professorId);
+    let studentId = ObjectId(body.studentId);
     let startTime = new Date(body.startTime);
     let endTime = new Date(body.endTime);
-
-    console.log(startTime, endTime);
 
     if (endTime <= startTime)
         throw "Malformed time frame - end time should be greater than start time"
@@ -23,15 +22,26 @@ async function createReservation(body) {
     if (startTime <= new Date())
         throw "Malformed time frame - can not create past reservations"
 
+    if (startTime.getFullYear() != endTime.getFullYear() ||
+        startTime.getMonth() != endTime.getMonth() ||
+        startTime.getDate() != endTime.getDate())
+        throw "Reservation has to take place within one day"
+
+    if (startTime.getDay() === 0 || startTime.getDay() === 6)
+        throw "Professors are not available in weekends"
+
     let reservation = await Reservation.
         findOne({ $and: [
-            { professorId: ObjectId(professorId) },
+            { $or: [
+                { professorId: professorId},
+                { studentId: studentId },
+            ]},
             { startTime: { $lt: endTime }},
             { endTime: { $gt: startTime }}
         ]})
-
+    
     if (reservation)
-        throw "Conflicting reservation already exists";
+        throw "Conflicting reservation exists"
 
     reservation = await new Reservation(body).save();
     return reservation;
@@ -64,4 +74,13 @@ async function getOwnReservations(userId, startTime, endTime) {
             { startTime: { $gte: startTime } },
             { endTime: { $lte: endTime } }
         ]})
+}
+
+async function getBusyProfessors(startTime, endTime) {
+    let reservations = await Reservation.
+        find({ $and: [
+            { startTime: { $lt: endTime} },
+            { endTime: { $gt: startTime }}
+        ]})
+    return reservations.map(res => res.professorId);
 }
