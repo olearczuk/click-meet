@@ -21,8 +21,8 @@ function professorAvailability(req, res, next) {
 
 function availableProfessors(req, res, next) {
     availabilityService.availableProfessors(req.query)
-        .then(professors => res.status(200).json({
-            professors: professors.map(prof => prof._id)
+        .then(availability => res.status(200).json({
+            professors: availability.map(av => av.professorId)
         }))
         .catch(err => next(err));
 }
