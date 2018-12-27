@@ -27,16 +27,18 @@ function isProfessor(req, res, next) {
 function isProfessorAndCreator(req, res, next) {
     isProfessor(req, res, () => {
         availabilityService.getAvailability(req.params.id)
-        .then(availability => {
-            if (!availability)
-                throw "Availability not found"
+            .then(availability => {
+                if (!availability)
+                    return res.status(400).json({
+                        message: "Availability not found"
+                    })
 
-            if (availability.professorId != req.session.user)
-                return res.status(403).json({
-                    message: "You can only delete your own availability",
-                })
+                if (availability.professorId != req.session.user)
+                    return res.status(403).json({
+                        message: "You can only delete your own availability",
+                    })
 
-            next();
-        });
+                next();
+            });
     });
 }   

@@ -6,6 +6,7 @@ module.exports = {
     professorAvailability,
     deleteAvailability,
     availableProfessors,
+    getAvailability,
 }
 
 async function createAvailability(queryParams) {
@@ -61,8 +62,12 @@ async function availableProfessors(query) {
         find({$and: [
                 {day: query.day},
                 {$and: [
-                    {start_hour : { $gte: query.start_hour}},
-                    {end_hour : { $lte: query.end_hour}},
+                    {start_hour : { $lte: query.start_hour}},
+                    {end_hour : { $gte: query.end_hour}},
                 ]}
         ]});
+}
+
+async function getAvailability(id) {
+    return Availability.findById(id);
 }
