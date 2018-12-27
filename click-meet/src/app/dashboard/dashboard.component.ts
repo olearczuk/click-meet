@@ -23,5 +23,7 @@ export class DashboardComponent implements OnInit {
     this.userService.logout().subscribe(() => {}, error => {
       this.errorMessage = error.message;
     });
+
+    return false;
   }
 }

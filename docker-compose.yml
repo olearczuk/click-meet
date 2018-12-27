@@ -4,6 +4,21 @@ networks:
   internal:
 
 services:
+  click-meet:
+    container_name: click-meet
+    restart: always
+    build: './click-meet'
+    ports:
+      - "2137:2137"
+    links:
+      - users-microservice
+      - availability-microservice
+      - interests-microservice
+    networks:
+      internal:
+        aliases:
+          - click-meet
+
   users-microservice:
     container_name: users-microserice
     restart: always
