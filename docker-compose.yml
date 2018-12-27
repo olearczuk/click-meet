@@ -5,7 +5,7 @@ networks:
 
 services:
   users-microservice:
-    container_name: users-microserice
+    container_name: users-microservice
     restart: always
     build: './users-microservice'
     ports:
@@ -19,7 +19,7 @@ services:
           - users-microservice
 
   availability-microservice:
-    container_name: availability-microserice
+    container_name: availability-microservice
     restart: always
     build: './availability-microservice'
     ports:
@@ -33,7 +33,7 @@ services:
           - availability-microservice
 
   interests-microservice:
-    container_name: interests-microserice
+    container_name: interests-microservice
     restart: always
     build: './interests-microservice'
     ports:
@@ -45,6 +45,28 @@ services:
       internal:
         aliases:
           - interests-microservice
+  
+  reservations-microservice:
+    container_name: reservations-microservice
+    restart: always
+    build: './reservations-microservice'
+    ports:
+      - "9030:9030"
+    links:
+      - mongo-reservations
+      - redis
+    networks:
+      internal:
+        aliases:
+          - reservations-microservice
+
+  mongo-reservations:
+    container_name: mongo-reservations
+    image: mongo
+    networks:
+      internal:
+        aliases:
+          - mongo-reservations
 
   mongo-interests:
     container_name: mongo-interests

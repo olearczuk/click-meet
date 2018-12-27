@@ -1,0 +1,4 @@
+{
+    "databaseURI": "mongodb://mongo-reservations:27017/reservations-microservice",
+    "sessionSecret": "some sort of secret"
+}
