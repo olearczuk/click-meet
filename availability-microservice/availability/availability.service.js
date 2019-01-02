@@ -37,8 +37,13 @@ async function professorAvailability(professorId) {
     return availability;
 }
 
-async function deleteAvailability(id) {
-    let availability = await Availability.findByIdAndDelete(ObjectId(id));
+async function deleteAvailability(ids) {
+    ids = [...new Set(ids)];
+    let availability = [];
+    for (id of ids) {
+        let av = await Availability.findByIdAndDelete(ObjectId(id));
+        availability.push(av);
+    }
     return availability;
 }
 

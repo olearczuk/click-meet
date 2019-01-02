@@ -19,8 +19,8 @@ router.put('/', [
     check('end_hour').isInt({ min: 0, max: 24 * 60 - 1}),
 ], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isProfessor, createAvailability);
 
-router.delete('/:id', [
-    check('id').isMongoId(),
+router.delete('/', [
+    check('ids.*').isMongoId(),
 ], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isProfessorAndCreator, deleteAvailability);
 
 module.exports = router;
@@ -53,7 +53,7 @@ function createAvailability(req, res, next) {
 }
 
 function deleteAvailability(req, res, next) {
-    availabilityService.deleteAvailability(req.params.id)
+    availabilityService.deleteAvailability(req.body.ids)
         .then(availability => {
             res.status(200).json({
                 availability: availability
