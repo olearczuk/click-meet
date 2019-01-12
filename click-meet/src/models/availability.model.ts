@@ -1,9 +1,9 @@
 import {User} from "./user.model";
 
-export interface Availability {
-  id: number;
+export class Availability {
+  _id: number;
   day: number;
   start_hour: number;
   end_hour: number;
-  professor: User;
+  professorId: string;
 }

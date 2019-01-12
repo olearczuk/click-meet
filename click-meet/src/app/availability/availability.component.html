@@ -1,0 +1,36 @@
+<div class="calendar-container">
+  <table class="calendar">
+    <thead>
+    <th>Time </th>
+    <th *ngFor="let day of calendarService.days()"> {{ day }}</th>
+    </thead>
+    <tbody>
+    <tr *ngFor="let time of calendarService.times(); let i = index">
+      <td *ngIf="(i % 2) == 0" rowspan="2" class="time">{{calendarService.formatTime(time)}}</td>
+      <td *ngFor="let day of calendarService.days(); let j = index"
+          [ngClass]="{'available':  availabilityService.availabilityExists(i, j),
+                      'selected': selectionService.checkForSelection(i, j) }"
+          (mousedown)="calendarService.mouseDownEvent($event, i, j)"
+          (document:mouseup)="calendarService.mouseUpEvent($event, i, j)"
+          (mouseover)="calendarService.mouseOverEvent($event, i, j)">
+        &nbsp;
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="calendar-options">
+    <div class="button button-add" [ngClass]="{'button-active': calendarService.adding(),
+    'button-disabled': calendarService.removing()}" (click)="availabilityService.addAvailability()">
+      {{ calendarService.adding() ? "Click to add selected availability" : "Add new availability" }}
+    </div>
+    <div class="button button-remove" [ngClass]="{'button-active': calendarService.removing(),
+    'button-disabled': calendarService.adding()}" (click)="availabilityService.removeAvailability()">
+      {{ calendarService.removing() ? "Click to remove selected availability" : "Remove existing availability" }}
+    </div>
+    <div *ngIf="calendarService.adding() || calendarService.removing()" class="button button-cancel" (click)="calendarService.cancelAction()">
+      Click here to cancel
+    </div>
+    <div *ngIf="calendarService.message()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
+  </div>
+</div>

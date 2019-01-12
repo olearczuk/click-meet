@@ -1,9 +1,4 @@
 .dashboard-page {
-  top: 50%;
-  left: 50%;
-  position: absolute;
-  transform: translate(-50%,-50%);
-
   h1 {
     text-align: center;
     margin: 20px;
@@ -11,12 +6,20 @@
     font-family: Arial, serif;
   }
 
-  .dashboard-container {
+  .dashboard {
+    display: flex;
+    justify-content: center;
+  }
+
+  .dashboard-container, .dashboard-nav {
     border-radius: 3px;
     background: white;
-    box-shadow: 0 0 20px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.3);
     padding: 15px 60px;
+    margin: 15px;
+  }
 
+  .dashboard-nav {
     .error-message {
       color: #a94442;
       background-color: #f2dede;

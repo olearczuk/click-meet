@@ -1,0 +1,116 @@
+.calendar-container {
+  display: flex;
+  justify-content: center;
+}
+
+.calendar, .calendar-options {
+  margin: 15px;
+}
+
+.calendar {
+  border-collapse: collapse;
+
+  th {
+    font-family: Arial, serif;
+    background: linear-gradient(#F0CB35, #C02425);
+    color: white;
+    font-weight: 100;
+    text-transform: full-width;
+  }
+
+  th, .time {
+    padding: 12px;
+  }
+
+  td, th {
+    border: 1px solid #d2d4d9;
+  }
+
+
+  td:not(.time) {
+    background-color: #dfe1e6;
+
+    &.available {
+      background-color: #ffffff;
+    }
+
+    &.selected {
+      background-color: #9C9EA3;
+    }
+  }
+
+  .time {
+    vertical-align: top;
+    font-size: 12px;
+    font-family: Arial, serif;
+    padding-top: 4px;
+    text-align: center;
+  }
+}
+
+.calendar-options {
+  .message {
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 5px;
+    border: 1px solid #000000;
+
+    &.error {
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+    }
+
+    &.success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+  }
+
+  .button {
+    cursor: pointer;
+
+    &:before {
+      content: ' ';
+      margin: 5px;
+      background: linear-gradient(#F0CB35, #C02425);
+      border: none;
+      padding: 4px 6px;
+      color: white;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    &.button-add:before {
+      content: '＋';
+    }
+
+    &.button-remove:before {
+      content: '－';
+    }
+
+    &.button-cancel:before {
+      content: '🗙';
+    }
+
+    &.button-active:before {
+      content: '🗸';
+      padding: 3.5px 6.5px;
+    }
+
+    &.button-disabled {
+      cursor: not-allowed;
+
+      &:before {
+        background: linear-gradient(#919191, #737373);
+      }
+    }
+  }
+}
+
+
+
+
+
+

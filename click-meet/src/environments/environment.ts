@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  userApiUrl: 'http://0.0.0.0:8080'
+  userApiUrl: 'http://0.0.0.0:8080',
+  availabilityApiUrl: 'http://0.0.0.0:9010',
+  interestsApiUrl: '',
 };
 
 /*

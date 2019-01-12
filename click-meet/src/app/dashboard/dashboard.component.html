@@ -1,8 +1,14 @@
 <div class="dashboard-page">
   <h1>click&meet</h1>
-  <div class="dashboard-container">
-    <p> Welcome, {{ currentUser?.username }} </p>
-    <p> If you would like to logout, <a href="#" (click)="!!logout()">click here</a>!</p>
-    <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
+
+  <div class="dashboard">
+    <div class="dashboard-nav">
+      <p> Welcome, {{ currentUser?.username }} </p>
+      <a href="#" (click)="!!logout()">Logout</a>
+      <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
+    </div>
+    <div class="dashboard-container">
+      <app-availability [currentUser]="currentUser"></app-availability>
+    </div>
   </div>
 </div>

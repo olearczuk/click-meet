@@ -23,7 +23,7 @@ export class RequestService {
   }
 
   put(url: string, body: Object = {}): Observable<any> {
-    return this.http.put(url, JSON.stringify(body), )
+    return this.http.put(url, JSON.stringify(body), { withCredentials: true, headers: this.headers })
                     .pipe(catchError(this.formatErrors));
   }
 
@@ -32,8 +32,8 @@ export class RequestService {
                     .pipe(catchError(this.formatErrors));
   }
 
-  delete(url: string): Observable<any> {
-    return this.http.delete(url, { withCredentials: true, headers: this.headers })
+  delete(url: string, body: Object = {}): Observable<any> {
+    return this.http.request('DELETE', url, { withCredentials: true, headers: this.headers })
                     .pipe(catchError(this.formatErrors));
   }
 }

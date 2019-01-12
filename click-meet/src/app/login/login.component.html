@@ -10,7 +10,7 @@
       <label for="password">Password</label>
     </div>
     <button type="submit" [disabled]="!login.form.valid">▶</button>
-    <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
+    <div *ngIf="errorMessage" class="error-message">{{errorMessage}}</div>
   </form>
   <div class="footer"> Don't have an account? <a routerLink="/register">Register here</a>!</div>
 </div>
