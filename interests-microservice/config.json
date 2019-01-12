@@ -1,4 +1,4 @@
 {
-    "databaseURI": "mongodb://localhost/users-microservice",
+    "databaseURI": "mongodb://localhost/interests-microservice",
     "sessionSecret": "some sort of secret"
 }
