@@ -1,6 +1,6 @@
 {
-    "databaseURI": "mongodb://mongo-reservations:27017/reservations-microservice",
+    "databaseURI": "mongodb://localhost/reservations-microservice",
     "sessionSecret": "some sort of secret",
-    "usersMicroserviceURL": "http://users-microservice:8080/",
-    "availabilityMicroserviceURL": "http://availability-microservice:9010/"
+    "usersMicroserviceURL": "http://localhost:8080/",
+    "availabilityMicroserviceURL": "http://localhost:9010/"
 }

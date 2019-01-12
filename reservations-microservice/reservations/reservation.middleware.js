@@ -62,7 +62,9 @@ async function isProfessorId(req, res, next) {
     let professorId = req.body.professorId;
     let cookie = req.headers.cookie;
 
-    let response = await fetch(config.usersMicroserviceURL + professorId + "/info", {
+    let users_url = process.env.USERS_URL | config.usersMicroserviceURL;
+
+    let response = await fetch(users_url + professorId + "/info", {
         headers: {
             cookie: cookie
         }
@@ -93,7 +95,9 @@ async function isProfessorAvailable(req, res, next) {
     let end_hour = 60 * endTime.getHours() + endTime.getMinutes();
     let day = startTime.getDay() - 1;
 
-    let url = config.availabilityMicroserviceURL + "?day=" + day.toString() + 
+    let availability_url = process.env.AVAILABILITY_URL | config.availabilityMicroserviceURL;
+
+    let url = availability_url + "?day=" + day.toString() + 
         "&start_hour=" + start_hour.toString() + "&end_hour=" + end_hour.toString();
 
     let response = await fetch(url, {
