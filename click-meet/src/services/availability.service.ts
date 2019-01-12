@@ -30,8 +30,7 @@ export class AvailabilityService {
   getAvailability(user: User) {
     return this.requestService.get(environment.availabilityApiUrl + this.availabilityApiPaths.getAvailability + user.id).
       pipe(map(data => {
-        console.log(this.processAvailabilities(null, data.availability));
-        this.currentAvailabilitiesSubject.next(this.processAvailabilities(null, data.availability) as Availability[][]);
+        this.currentAvailabilitiesSubject.next(this.processAvailabilities(null, data.availability, []) as Availability[][]);
         return data;
       }));
   }
@@ -39,15 +38,15 @@ export class AvailabilityService {
   createAvailability(availability: Availability) {
     return this.requestService.put(environment.availabilityApiUrl + this.availabilityApiPaths.createAvailability, availability).
       pipe(map(data => {
-        this.currentAvailabilitiesSubject.next(this.processAvailabilities(this.currentAvailabilitiesSubject.getValue(), [data.availability]) as Availability[]);
+        this.currentAvailabilitiesSubject.next(this.processAvailabilities(this.currentAvailabilitiesSubject.getValue(), [data.availability], []) as Availability[]);
         return data;
       }));
   }
 
   deleteAvailabilities(availabilities: Availability[]) {
-    return this.requestService.delete(environment.availabilityApiUrl + this.availabilityApiPaths.deleteAvailability, availabilities.map(x => x._id)).
+    return this.requestService.delete(environment.availabilityApiUrl + this.availabilityApiPaths.deleteAvailability, { ids: availabilities.map(x => x._id)}).
       pipe(map(data => {
-        this.currentAvailabilitiesSubject.next(this.currentAvailabilitiesSubject.getValue());
+        this.currentAvailabilitiesSubject.next(this.processAvailabilities(this.currentAvailabilitiesSubject.getValue(), [], availabilities));
         return data;
       }));
   }
@@ -96,7 +95,7 @@ export class AvailabilityService {
     let second_end_hour = Math.max(... availabilities.map(av => av.end_hour));
 
     this.deleteAvailabilities(availabilities).subscribe(data => {
-      this.calendarService.setSuccess(true, "Successfully created availability");
+      this.calendarService.setSuccess(true, "Successfully removed availability");
     }, error => {
       this.calendarService.setError(true, error.message);
     });
@@ -156,8 +155,8 @@ export class AvailabilityService {
     return availabilities;
   }
 
-  processAvailabilities(availabilities, data: Availability[]) {
-    for (let availability of data) {
+  processAvailabilities(availabilities, dataToAdd: Availability[], dataToRemove) {
+    for (let availability of dataToAdd) {
       let column = availability.day;
       let rowStart = (availability.start_hour - this.calendarService.start_hour()) /
                       this.calendarService.interval();
@@ -174,6 +173,18 @@ export class AvailabilityService {
         }
 
         availabilities[row][column] = availability;
+      }
+    }
+
+    for (let availability of dataToRemove) {
+      let column = availability.day;
+      let rowStart = (availability.start_hour - this.calendarService.start_hour()) /
+        this.calendarService.interval();
+      let rowEnd = (availability.end_hour - this.calendarService.start_hour()) /
+        this.calendarService.interval();
+
+      for (let row = rowStart; row < rowEnd; row += 1) {
+        availabilities[row][column] = null;
       }
     }
 

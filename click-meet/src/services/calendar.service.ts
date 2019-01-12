@@ -91,6 +91,7 @@ export class CalendarService {
   }
 
   setSuccess(val, message) {
+    this.availabilityAction.error = !val;
     this.availabilityAction.success = val;
     this.availabilityAction.message = message;
   }
@@ -100,6 +101,7 @@ export class CalendarService {
   }
 
   setError(val, message) {
+    this.availabilityAction.success = !val;
     this.availabilityAction.error = val;
     this.availabilityAction.message = message;
   }

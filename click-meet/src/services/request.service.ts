@@ -33,7 +33,7 @@ export class RequestService {
   }
 
   delete(url: string, body: Object = {}): Observable<any> {
-    return this.http.request('DELETE', url, { withCredentials: true, headers: this.headers })
+    return this.http.request('DELETE', url, { withCredentials: true, headers: this.headers, body: JSON.stringify(body) })
                     .pipe(catchError(this.formatErrors));
   }
 }
