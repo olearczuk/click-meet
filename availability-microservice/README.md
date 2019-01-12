@@ -7,4 +7,4 @@ Microservice used to handle availability activity
 | GET | /professor/:professorId | - | availability of professor |
 | PUT | / | day, start_hour, end_hour | creates availability for professor |
 | GET | / | day, start_hour, end_hour | professors available in given time |
-| DELETE | /:id | - | deletes availability |
+| DELETE | / | ids | deletes availability |

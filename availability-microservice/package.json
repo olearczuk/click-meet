@@ -23,5 +23,8 @@
     "redis": "^2.8.0",
     "rootpath": "^0.1.2",
     "validator": "^10.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
   }
 }
