@@ -11,5 +11,6 @@ COPY . .
 EXPOSE 9010
 
 ENV MONGODB_URI="mongodb://mongo-interests:27017/interests-microservice"
+ENV REDIS="redis"
 
 CMD [ "npm", "start" ]

@@ -5,7 +5,7 @@ const RedisStore = require('connect-redis')(session);
 const bodyParser = require('body-parser');
 const redis = require('redis');
 const client = redis.createClient({
-  host: 'redis',
+  host: process.env.REDIS | 'localhost',
   port: 6379,
 });
 
