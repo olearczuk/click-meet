@@ -45,11 +45,17 @@ async function getProfessorsInterests(professorId) {
     });
 }
 
-async function getInterestsProfessors(id) {
-    let interest = await Interest.findById(id);
-    if (!interest)
-        throw "Such interest does not exist";
-    return interest.professors;
+async function getInterestsProfessors(title) {
+    let interests = await Interest.find({ title: {'$regex' : `.*${title}.*`, '$options': 'i' }});
+    let professors = [];
+    
+    interests.forEach(el => {
+        el.professors.forEach(prof => {
+            professors.push(prof.toString());
+        });
+    });
+
+    return [...new Set(professors)];
 }
 
 async function deleteInterest(id, professorId) {
