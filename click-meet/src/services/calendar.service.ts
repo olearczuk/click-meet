@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DAYS, CalendarConfig } from "../models/helpers/calendarconfig.model";
-import { AvailabilityAction } from "../models/helpers/availabilityaction.model";
+import { Action } from "../models/helpers/availabilityaction.model";
 import {SelectionService} from "./selection.service";
 
 @Injectable({
@@ -8,7 +8,7 @@ import {SelectionService} from "./selection.service";
 })
 export class CalendarService {
   calendarConfig: CalendarConfig;
-  availabilityAction: AvailabilityAction;
+  action: Action;
   _interval: number = 30;
   _start_hour: number = 8 * 60;
   _end_hour: number = 19.5 * 60;
@@ -21,11 +21,11 @@ export class CalendarService {
       this._end_hour,
       this.constructTimes(this._start_hour, this._end_hour, this._interval));
 
-    this.availabilityAction = new AvailabilityAction();
+    this.action = new Action();
   }
 
   mouseDownEvent(e, i, j) {
-    if (!this.availabilityAction.adding && !this.availabilityAction.removing) {
+    if (!this.action.adding && !this.action.removing) {
       return;
     }
 
@@ -65,53 +65,66 @@ export class CalendarService {
   }
 
   cancelAction() {
-    this.availabilityAction.adding = false;
-    this.availabilityAction.removing = false;
+    this.action.adding = false;
+    this.action.removing = false;
     this.selectionService.resetSelection();
   }
 
   removing() {
-    return this.availabilityAction.removing;
+    return this.action.removing;
   }
 
   setRemoving(val) {
-    this.availabilityAction.removing = val;
+    this.action.removing = val;
   }
 
   adding() {
-    return this.availabilityAction.adding;
+    return this.action.adding;
   }
 
   setAdding(val) {
-    this.availabilityAction.adding = val;
+    this.action.adding = val;
+  }
+
+  interestupdating() {
+    return this.action.interestupdating
+  }
+
+  setInterestupdating(val) {
+    this.action.interestupdating = val;
+  }
+
+  cancelInterestupdating() {
+    this.action.interestupdating = false;
+    this.resetMessage();
   }
 
   success() {
-    return this.availabilityAction.success;
+    return this.action.success;
   }
 
   setSuccess(val, message) {
-    this.availabilityAction.error = !val;
-    this.availabilityAction.success = val;
-    this.availabilityAction.message = message;
+    this.action.error = !val;
+    this.action.success = val;
+    this.action.message = message;
   }
 
   error() {
-    return this.availabilityAction.error;
+    return this.action.error;
   }
 
   setError(val, message) {
-    this.availabilityAction.success = !val;
-    this.availabilityAction.error = val;
-    this.availabilityAction.message = message;
+    this.action.success = !val;
+    this.action.error = val;
+    this.action.message = message;
   }
 
   message() {
-    return this.availabilityAction.message;
+    return this.action.message;
   }
 
   resetMessage() {
-    this.availabilityAction.message = "";
+    this.action.message = "";
   }
 
   time(index) {

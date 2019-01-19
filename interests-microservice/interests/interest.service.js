@@ -39,7 +39,7 @@ async function getProfessorsInterests(professorId) {
     let interests = await Interest.find({ professors: ObjectId(professorId) });
     return interests.map(interest => {
         return {
-            interest: interest.title,
+            title: interest.title,
             id: interest.id,
         }
     });

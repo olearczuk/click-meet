@@ -56,7 +56,7 @@ export class AvailabilityService {
   }
 
   addAvailability() {
-    if (this.calendarService.removing()) {
+    if (this.calendarService.removing() || this.calendarService.interestupdating()) {
       return;
     }
 
@@ -77,7 +77,7 @@ export class AvailabilityService {
   }
 
   removeAvailability() {
-    if (this.calendarService.adding()) {
+    if (this.calendarService.adding() || this.calendarService.interestupdating()) {
       return;
     }
 

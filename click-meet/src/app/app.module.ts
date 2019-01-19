@@ -11,7 +11,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { AvailabilityComponent } from './availability/availability.component';
+import { CalendarComponent } from './calendar/calendar.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { AvailabilityComponent } from './availability/availability.component';
     RegisterComponent,
     HomeComponent,
     DashboardComponent,
-    AvailabilityComponent
+    CalendarComponent
   ],
   imports: [
     HttpClientModule,
