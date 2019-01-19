@@ -1,12 +1,27 @@
 const router = require('express').Router();
 const userService = require('./user.service');
 const userMiddleware = require('./user.middleware');
+const { check } = require('express-validator/check');
 
-router.post('/login', userMiddleware.isNotLoggedIn, login);
-router.get('/login', isLoggedIn);
-router.post('/register', userMiddleware.isNotLoggedIn, register);
+router.post('/login', [
+    check('username').not().isEmpty(),
+    check('password').not().isEmpty(),
+], userMiddleware.checkValidationErrors, userMiddleware.isNotLoggedIn, login);
+
+router.get('/login', userMiddleware.isLoggedIn, getLogin);
+
+router.post('/register', [
+    check('username').not().isEmpty(),
+    check('password').not().isEmpty(),
+    check('email').isEmail(),
+], userMiddleware.checkValidationErrors, userMiddleware.isNotLoggedIn, register);
+
 router.post('/logout', userMiddleware.isLoggedIn, logout);
-router.get('/:id/info', userMiddleware.isLoggedIn, info);
+
+router.get('/:id/info', [
+    check('id').isMongoId(),
+], userMiddleware.checkValidationErrors, userMiddleware.isLoggedIn, info);
+
 router.get('/professors', userMiddleware.isLoggedIn, getProfessors)
 
 module.exports = router;
@@ -36,31 +51,27 @@ function register(req, res, next) {
         .catch(err => next(err));
 }
 
-function logout(req, res, next) {
+function logout(req, res) {
     if (req.session) {
-        req.session.destroy(function (done) {
+        req.session.destroy(() =>  {
             res.json({});
         });
     }
 }
 
-function isLoggedIn(req, res, next) {
-    if (req.session.user) {
-        userService.findById(req.session.user)
-            .then(user => {
-                if (!user)
-                    throw 'User not found';
-                res.json({
-                    id: req.session.user,
-                    username: user.username,
-                    email: user.email,
-                    professor: user.professor
-                })
+function getLogin(req, res) {
+    userService.findById(req.session.user)
+        .then(user => {
+            if (!user)
+                throw 'User not found';
+            res.json({
+                id: req.session.user,
+                username: user.username,
+                email: user.email,
+                professor: user.professor
             })
-            .catch(err => next(err));
-    } else {
-        res.json({});
-    }
+        })
+        .catch(err => next(err));
 }
 
 function info(req, res, next) {
