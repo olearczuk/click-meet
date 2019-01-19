@@ -45,8 +45,8 @@ function availableProfessors(req, res, next) {
 }
 
 function createAvailability(req, res, next) {
-    req.body = {...req.body, professorId: req.session.user}
-    availabilityService.createAvailability(req.body)
+    body = {...req.body, professorId: req.session.user}
+    availabilityService.createAvailability(body)
         .then(availability => res.status(201).json({
             availability: availability,
         }))

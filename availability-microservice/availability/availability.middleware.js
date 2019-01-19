@@ -40,10 +40,9 @@ function isProfessorAndCreator(req, res, next) {
                         return res.status(403).json({
                             message: "You can only delete your own availability",
                         })
-
-                    next();
                 });
             }
+        next();
     });
 }   
 
