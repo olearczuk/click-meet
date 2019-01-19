@@ -1,13 +1,35 @@
 const router = require('express').Router()
 const reservationService = require('./reservation.service');
 const reservationMiddleware = require('./reservation.middleware');
+const { check } = require('express-validator/check')
 
-router.put('/student', reservationMiddleware.isStudent, reservationMiddleware.isProfessorId, reservationMiddleware.isProfessorAvailable, createStudentsReservation);
-router.put('/professor', reservationMiddleware.isProfessor, reservationMiddleware.isProfessorAvailable, createProfessorsReservation);
-router.get('/:id', reservationMiddleware.isLoggedIn, getReservation);
-router.delete('/:id', reservationMiddleware.isLoggedInAndParticipant, deleteReservation);
-router.get('/professor/:professorId', reservationMiddleware.isLoggedIn, getProfessorsReservations);
+router.put('/student', [
+    check('professorId').isMongoId(),
+    check('startTime').isISO8601(),
+    check('endTime').isISO8601(),
+], reservationMiddleware.checkValidationErrors, reservationMiddleware.isStudent, reservationMiddleware.isProfessorId, 
+   reservationMiddleware.isProfessorAvailable, createStudentsReservation);
+
+router.put('/professor', [
+    check('startTime').isISO8601(),
+    check('endTime').isISO8601(),
+], reservationMiddleware.checkValidationErrors, reservationMiddleware.isProfessor, 
+   reservationMiddleware.isProfessorAvailable, createProfessorsReservation);
+
+router.get('/:id', [
+    check('id').isMongoId(),
+], reservationMiddleware.checkValidationErrors, reservationMiddleware.isLoggedIn, getReservation);
+
+router.delete('/:id', [
+    check('id').isMongoId(),
+], reservationMiddleware.checkValidationErrors, reservationMiddleware.isLoggedInAndParticipant, deleteReservation);
+
+router.get('/professor/:professorId', [
+    check('professorId').isMongoId(),
+], reservationMiddleware.checkValidationErrors, reservationMiddleware.isLoggedIn, getProfessorsReservations);
+
 router.get('/personal', reservationMiddleware.isLoggedIn, getOwnReservations);
+
 router.get('/', reservationMiddleware.isLoggedIn, getBusyProfessors);
 
 module.exports = router
