@@ -42,13 +42,14 @@ export class UserService {
   }
 
   updateLogin() {
-    return this.requestService.get(environment.userApiUrl + this.userApiPaths.login)
-      .pipe(map(
-        data => {
-          this.currentUserSubject.next(data as User);
-          return data;
+    this.requestService.get(environment.userApiUrl + this.userApiPaths.login)
+      .subscribe((data) => {
+        this.currentUserSubject.next(data as User);
+      }, err => {
+        if (err.status === 403) {
+            this.currentUserSubject.next({} as User);
         }
-      ));
+    });
   }
 
   logout() {

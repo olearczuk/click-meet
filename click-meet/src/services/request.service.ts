@@ -14,6 +14,7 @@ export class RequestService {
   };
 
   private formatErrors(error: any) {
+    error.error.status = error.status;
    return  throwError(error.error);
   }
 

@@ -19,7 +19,7 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.updateLogin().subscribe();
+    this.userService.updateLogin();
   }
 
   onSubmit() {
