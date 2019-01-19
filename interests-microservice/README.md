@@ -7,5 +7,5 @@ Microservice used to handle interests activity
 | POST | / | title | id|
 | GET | / | - | returns all interests |
 | GET | /professor/:professorId | - | returns professor's interests |
-| GET | /:id | - | professors with such interest |
+| GET | /:title | - | professors with such interest |
 | DELETE | /:id | - | deletes interest for current professor |

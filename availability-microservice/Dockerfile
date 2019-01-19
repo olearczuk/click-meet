@@ -11,5 +11,6 @@ COPY . .
 EXPOSE 9010
 
 ENV MONGODB_URI="mongodb://mongo-availability:27017/availability-microservice"
+ENV REDIS="redis"
 
 CMD [ "npm", "start" ]

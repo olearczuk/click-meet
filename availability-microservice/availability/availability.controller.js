@@ -20,6 +20,7 @@ router.put('/', [
 ], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isProfessor, createAvailability);
 
 router.delete('/', [
+    check('ids').isArray(),
     check('ids.*').isMongoId(),
 ], availabilityMiddleware.checkValidationErrors,availabilityMiddleware.isProfessorAndCreator, deleteAvailability);
 

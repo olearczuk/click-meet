@@ -1,12 +1,27 @@
 const router = require('express').Router();
+const { check } = require('express-validator/check')
+
 const interestService = require('./interest.service');
 const interestMiddleware = require('./interest.middleware');
 
-router.post('/', interestMiddleware.isProfessor, createInterest);
+router.post('/', [
+    check('title').not().isEmpty()
+], interestMiddleware.checkValidationErrors, interestMiddleware.isProfessor, createInterest);
+
 router.get('/', interestMiddleware.isLoggedIn, getInterests);
-router.get('/professor/:professorId', interestMiddleware.isLoggedIn, getProfessorsInterests);
-router.get('/:id', interestMiddleware.isLoggedIn, getInterestsProfessors);
-router.delete('/:id', interestMiddleware.isProfessor, deleteInterest)
+
+router.get('/professor/:professorId', [
+    check('professorId').isMongoId(),
+], interestMiddleware.checkValidationErrors, interestMiddleware.isLoggedIn, getProfessorsInterests);
+
+router.get('/:title', [
+    check('title').not().isEmpty()
+], interestMiddleware.checkValidationErrors, interestMiddleware.isLoggedIn, getInterestsProfessors);
+
+router.delete('/:id', [
+    check('id').isMongoId(),
+], interestMiddleware.checkValidationErrors, interestMiddleware.isProfessor, deleteInterest)
+
 module.exports = router
 
 function createInterest(req, res, next) {
@@ -34,7 +49,7 @@ function getProfessorsInterests(req, res, next) {
 }
 
 function getInterestsProfessors(req, res, next) {
-    interestService.getInterestsProfessors(req.params.id)
+    interestService.getInterestsProfessors(req.params.title)
         .then(professors => res.status(200).json({
             professors: professors
         }))

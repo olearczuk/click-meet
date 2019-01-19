@@ -1,6 +1,7 @@
 const reservationService = require('./reservation.service');
 const fetch = require('node-fetch');
 const config = require('config.json');
+const { validationResult } = require('express-validator/check');
 
 module.exports = {
     isLoggedIn,
@@ -9,6 +10,7 @@ module.exports = {
     isLoggedInAndParticipant,
     isProfessorId,
     isProfessorAvailable,
+    checkValidationErrors,
 }
 
 function isLoggedIn(req, res, next) {
@@ -62,7 +64,9 @@ async function isProfessorId(req, res, next) {
     let professorId = req.body.professorId;
     let cookie = req.headers.cookie;
 
-    let users_url = process.env.USERS_URL | config.usersMicroserviceURL;
+    let users_url = process.env.USERS_URL || config.usersMicroserviceURL;
+
+    console.log(users_url + professorId + "/info");
 
     let response = await fetch(users_url + professorId + "/info", {
         headers: {
@@ -81,6 +85,9 @@ async function isProfessorId(req, res, next) {
         return res.status(403).json({
             message: "Given professorId does not belong to professor"
         });
+
+    console.log("Went through")
+
     next();
 }
 
@@ -95,7 +102,7 @@ async function isProfessorAvailable(req, res, next) {
     let end_hour = 60 * endTime.getHours() + endTime.getMinutes();
     let day = startTime.getDay() - 1;
 
-    let availability_url = process.env.AVAILABILITY_URL | config.availabilityMicroserviceURL;
+    let availability_url = process.env.AVAILABILITY_URL || config.availabilityMicroserviceURL;
 
     let url = availability_url + "?day=" + day.toString() + 
         "&start_hour=" + start_hour.toString() + "&end_hour=" + end_hour.toString();
@@ -118,5 +125,19 @@ async function isProfessorAvailable(req, res, next) {
             message: "Professor is not available in such hours"
         });
 
+    next();
+}
+
+function checkValidationErrors(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let message = "Parameters with wrong values: ";
+        errors.array().forEach((el, index, arr) => {
+            message += el.param;
+            if (index < arr.length - 1)
+                message += ', ';
+        });
+        return res.status(400).json({ message: message });
+    }
     next();
 }

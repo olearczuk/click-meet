@@ -1,6 +1,9 @@
+const { validationResult } = require('express-validator/check');
+
 module.exports = {
     isLoggedIn,
     isProfessor,
+    checkValidationErrors,
 }
 
 function isLoggedIn(req, res, next) {
@@ -19,4 +22,18 @@ function isProfessor(req, res, next) {
             })
         next();
     });
+}
+
+function checkValidationErrors(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let message = "Parameters with wrong values: ";
+        errors.array().forEach((el, index, arr) => {
+            message += el.param;
+            if (index < arr.length - 1)
+                message += ', ';
+        });
+        return res.status(400).json({ message: message });
+    }
+    next();
 }
