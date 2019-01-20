@@ -8,6 +8,6 @@ Microservice used to handle reservations activity
 | PUT | /professor | startTime, endTime | id |
 | GET | /:id | - | reservation info |
 | DELETE | /:id | - | deletes reservation |
-| GET | /professor/:professorId | - | professor's reservations info |
-| GET | /reservations/personal | startTime endTime | user's reservations in given time frame |
+| GET | /professor/:professorId | startTime, endTime | professor's reservations info |
+| GET | /reservations/personal | startTime, endTime | user's reservations in given time frame |
 | GET | / | startTime, endTime | busy professors in given time |
