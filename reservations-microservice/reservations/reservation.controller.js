@@ -79,7 +79,14 @@ function deleteReservation(req, res, next) {
 function getProfessorsReservations(req, res, next) {
     reservationService.getProfessorsReservations(req.params.professorId, req.query.startTime, req.query.endTime)
         .then(reservations => res.status(200).json({
-            reservations: reservations.map(res => res.id)
+            reservations: reservations.map(res => {
+                if (res.studentId != req.session.user && res.professorId != req.session.user)
+                    return {
+                        startTime: res.startTime,
+                        endTime: res.endTime,
+                    };
+                return res;
+            })
         }))
         .catch(err => next(err));
 }
@@ -87,7 +94,7 @@ function getProfessorsReservations(req, res, next) {
 function getOwnReservations(req, res, next) {
     reservationService.getOwnReservations(req.session.user, req.query.startTime, req.query.endTime)
         .then(reservations => res.status(200).json({
-            reservations: reservations.map(res => res.id)
+            reservations: reservations,
         }))
         .catch(err => next(err));
 }
