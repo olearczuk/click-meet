@@ -1,5 +1,6 @@
 require('rootpath')();
 const express = require('express');
+const cors = require('cors');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const bodyParser = require('body-parser');
@@ -13,6 +14,10 @@ const errorHandler = require('./helpers/error-handler');
 const config = require('config.json');
 
 const app = express();
+
+app.use(cors({origin: [
+  "http://localhost:8090"
+], credentials: true}));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
