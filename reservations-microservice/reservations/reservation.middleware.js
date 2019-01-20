@@ -111,11 +111,6 @@ async function isProfessorAvailable(req, res, next) {
         headers: {
             cookie: cookie,
         },
-        query: {
-            day: startTime.getDate() - 1,
-            start_hour: 60 * startTime.getHours() + startTime.getMinutes(),
-            end_hour:  60 * endTime.getHours() + endTime.getMinutes(),
-        }
     });
 
     const json = await response.json();
