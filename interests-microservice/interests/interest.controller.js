@@ -19,7 +19,7 @@ router.get('/:title', [
 ], interestMiddleware.checkValidationErrors, interestMiddleware.isLoggedIn, getInterestsProfessors);
 
 router.delete('/:id', [
-    check('id').isMongoId(),
+    check('id').isInt(),
 ], interestMiddleware.checkValidationErrors, interestMiddleware.isProfessor, deleteInterest)
 
 module.exports = router

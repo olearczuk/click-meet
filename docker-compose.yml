@@ -4,6 +4,19 @@ networks:
   internal:
 
 services:
+  postgresql-interests:
+    restart: always
+    container_name: postgresql-interests
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=interests_db
+    build: postgres
+    networks:
+      internal:
+        aliases:
+          - postgresql-interests
+
   click-meet:
     container_name: click-meet
     restart: always
@@ -55,7 +68,7 @@ services:
     ports:
       - "9020:9020"
     links:
-      - mongo-interests
+      - postgresql-interests
       - redis
     networks:
       internal:
@@ -85,14 +98,6 @@ services:
       internal:
         aliases:
           - mongo-reservations
-
-  mongo-interests:
-    container_name: mongo-interests
-    image: mongo
-    networks:
-      internal:
-        aliases:
-          - mongo-interests
 
   mongo-availability:
     container_name: mongo-availability
