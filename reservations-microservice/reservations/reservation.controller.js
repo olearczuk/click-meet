@@ -28,7 +28,7 @@ router.get('/professor/:professorId', [
     check('professorId').isMongoId(),
 ], reservationMiddleware.checkValidationErrors, reservationMiddleware.isLoggedIn, getProfessorsReservations);
 
-router.get('/personal', reservationMiddleware.isLoggedIn, getOwnReservations);
+router.get('/reservations/personal', reservationMiddleware.isLoggedIn, getOwnReservations);
 
 router.get('/', reservationMiddleware.isLoggedIn, getBusyProfessors);
 
