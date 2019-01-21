@@ -65,10 +65,9 @@ async function isProfessorId(req, res, next) {
     let cookie = req.headers.cookie;
 
     let users_url = process.env.USERS_URL || config.usersMicroserviceURL;
-
-    console.log(users_url + professorId + "/info");
-
-    let response = await fetch(users_url + professorId + "/info", {
+    let url = users_url + "info?ids[]=" + professorId;
+    
+    let response = await fetch(url, {
         headers: {
             cookie: cookie
         }
@@ -79,14 +78,12 @@ async function isProfessorId(req, res, next) {
             message: "Given professorId does not belong to professor"
         });
 
-    const json = await response.json();
-
+    const json = (await response.json())[0];
+    
     if (json.type != 'professor')
         return res.status(403).json({
             message: "Given professorId does not belong to professor"
         });
-
-    console.log("Went through")
 
     next();
 }
