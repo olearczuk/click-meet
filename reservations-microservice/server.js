@@ -16,9 +16,8 @@ const config = require('config.json');
 const app = express();
 
 app.use(cors({origin: [
-  "http://localhost:8090"
-], credentials: true}));
-
+        "http://localhost:8090"
+    ], credentials: true}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

@@ -61,10 +61,10 @@ export class InterestsService {
   }
 
   searchProfessors(interest: Interest) {
-    return this.requestService.get(environment.interestsApiUrl + this.interestsApiPaths.getInterestsProfessors + interest.id)
+    return this.requestService.get(environment.interestsApiUrl + this.interestsApiPaths.getInterestsProfessors + interest.title)
       .pipe(map(
         data => {
-          return data;
+          return data.professors;
         }
       ));
   }

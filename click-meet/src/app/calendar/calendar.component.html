@@ -1,57 +1,110 @@
-<div class="calendar-container">
-  <table class="calendar">
-    <thead>
-    <th>Time </th>
-    <th *ngFor="let day of calendarService.days()"> {{ day }}</th>
-    </thead>
-    <tbody>
-    <tr *ngFor="let time of calendarService.times(); let i = index">
-      <td *ngIf="(i % 2) == 0" rowspan="2" class="time">{{calendarService.formatTime(time)}}</td>
-      <td *ngFor="let day of calendarService.days(); let j = index"
-          [ngClass]="{'available':  availabilityService.availabilityExists(i, j),
-                      'selected': selectionService.checkForSelection(i, j) }"
-          (mousedown)="calendarService.mouseDownEvent($event, i, j)"
-          (document:mouseup)="calendarService.mouseUpEvent($event, i, j)"
-          (mouseover)="calendarService.mouseOverEvent($event, i, j)">
-        &nbsp;
-      </td>
-    </tr>
-    </tbody>
-  </table>
+<div>
+  <div class="title">
+    <span class="go-left" (click)="calendarService.previousWeek()">◀</span>
+    {{calendarService.getDateStart()}} - {{calendarService.getDateEnd()}}
+    <span class="go-right" (click)="calendarService.nextWeek()">▶</span>
+  </div>
 
-  <div class="calendar-options">
-    <div class="button button-add" [ngClass]="{'button-active': calendarService.adding(),
-    'button-disabled': calendarService.removing() || calendarService.interestupdating()}" (click)="availabilityService.addAvailability()">
-      {{ calendarService.adding() ? "Click to add selected availability" : "Add new availability" }}
-    </div>
-    <div class="button button-remove" [ngClass]="{'button-active': calendarService.removing(),
-    'button-disabled': calendarService.adding() || calendarService.interestupdating()}" (click)="availabilityService.removeAvailability()">
-      {{ calendarService.removing() ? "Click to remove selected availability" : "Remove existing availability" }}
-    </div>
-    <div class="button button-interest" [ngClass]="{
-    'button-disabled': calendarService.interestupdating() || calendarService.removing() || calendarService.adding()}" (click)="interestService.changeInterest()">
-      Change interests
-    </div>
-    <div *ngIf="calendarService.adding() || calendarService.removing()" class="button button-cancel" (click)="calendarService.cancelAction()">
-      Click here to cancel
-    </div>
+  <div class="calendar-container">
+    <table class="calendar">
+      <thead>
+      <th>Time </th>
+      <th *ngFor="let day of calendarService.days()"> {{ day }}</th>
+      </thead>
+      <tbody>
+      <tr *ngFor="let time of calendarService.times(); let i = index">
+        <td *ngIf="(i % 2) == 0" rowspan="2" class="time">{{calendarService.formatTime(time)}}</td>
+        <ng-container *ngFor="let day of calendarService.days(); let j = index">
+          <td *ngIf="reservationsService.reservationExists(i,j) && reservationsService.reservationStart(i,j)"
+              [attr.rowspan]="reservationsService.reservationRowspan(i,j)"
+              class="reservation" [ngClass]="{'busy': reservationsService.reservationBusy(i,j),
+              'selected': reservationsService.reservationSelected(i, j)}"
+              (click)="reservationsService.selectForDelete(i, j)">
+            {{ reservationsService.reservationBusy(i, j) ? "Busy" : "Meeting"}}
+          </td>
+          <td *ngIf="!reservationsService.reservationExists(i,j)"
+              [ngClass]="{'available':  availabilityService.availabilityExists(i, j),
+                      'selected': selectionService.checkForSelection(i, j)}"
+              (mousedown)="calendarService.mouseDownEvent($event, i, j, !availabilityService.availabilityExists(i, j))"
+              (document:mouseup)="calendarService.mouseUpEvent($event, i, j)"
+              (mouseover)="calendarService.mouseOverEvent($event, i, j, !availabilityService.availabilityExists(i, j))">
+            &nbsp;
+          </td>
+        </ng-container>
+      </tr>
+      </tbody>
+    </table>
 
-    <div *ngIf="calendarService.interestupdating()" class="modal" (click)="calendarService.cancelInterestupdating()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-close" (click)="calendarService.cancelInterestupdating()">🗙</div>
-        <h2>Your current interests</h2>
-        <ul>
-          <li *ngFor="let interest of currentInterests"> <span class="interest" (click)="interestService.removeInterest(interest)">{{interest.title}}</span></li>
-          <li>
+    <div *ngIf="currentUser.professor" class="calendar-options">
+      <div class="button button-add" [ngClass]="{'button-active': calendarService.adding(),
+    'button-disabled': calendarService.cantAdding()}" (click)="availabilityService.addAvailability()">
+        {{ calendarService.adding() ? "Click to add selected availability" : "Add new availability" }}
+      </div>
+
+      <div class="button button-remove" [ngClass]="{'button-active': calendarService.removing(),
+    'button-disabled': calendarService.cantRemoving()}" (click)="availabilityService.removeAvailability()">
+        {{ calendarService.removing() ? "Click to remove selected availability" : "Remove existing availability" }}
+      </div>
+
+      <div class="button button-busy" [ngClass]="{'button-active': calendarService.marking(),
+    'button-disabled': calendarService.cantMarking()}" (click)="reservationsService.markBusy()">
+        {{ calendarService.marking() ? "Click to mark selected as busy" : "Mark as busy" }}
+      </div>
+
+      <div class="button button-delete" [ngClass]="{'button-active': calendarService.deleting(),
+    'button-disabled': calendarService.cantDeleting()}" (click)="reservationsService.deleteMeeting()">
+        {{ calendarService.marking() ? "Click to delete selected meeting" : "Delete meeting" }}
+      </div>
+
+      <div class="button button-interest" [ngClass]="{
+    'button-disabled': calendarService.cantInterestUpdating()}" (click)="interestService.changeInterest()">
+        Change interests
+      </div>
+
+      <div *ngIf="calendarService.canCancel()" class="button button-cancel" (click)="calendarService.cancelAction()">
+        Click here to cancel
+      </div>
+
+      <div *ngIf="calendarService.interestupdating()" class="modal" (click)="calendarService.cancelInterestupdating()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-close" (click)="calendarService.cancelInterestupdating()">🗙</div>
+          <h2>Your current interests</h2>
+          <ul>
+            <li *ngFor="let interest of currentInterests"> <span class="interest" (click)="interestService.removeInterest(interest)">{{interest.title}}</span></li>
+            <li>
             <span class="new-interest" (click)="interestService.pushInterest(interest.value)">
               <input #interest type="text" (click)="$event.stopPropagation()" (keyup.enter)="interestService.pushInterest(interest.value)">
             </span>
-          </li>
-        </ul>
-        <div *ngIf="calendarService.message() && calendarService.interestupdating()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
+            </li>
+          </ul>
+          <div *ngIf="calendarService.message() && calendarService.interestupdating()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
+        </div>
+      </div>
+
+      <div *ngIf="calendarService.message() && !calendarService.interestupdating()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
+    </div>
+
+    <div *ngIf="!currentUser.professor" class="calendar-options">
+      <div class="button button-add" [ngClass]="{'button-active': calendarService.searchingTime()}"
+           (click)="reservationsService.searchReservation()">
+        {{ calendarService.searchingTime() ? "Find professor in selected time" : "Search for reservation" }}
+      </div>
+      <div *ngIf="calendarService.canCancel()" class="button button-cancel" (click)="calendarService.cancelAction()">
+        Click here to cancel
+      </div>
+      <div *ngIf="calendarService.message() && !calendarService.searchingInterest()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
+    </div>
+
+    <div *ngIf="calendarService.searchingInterest()" class="modal" (click)="calendarService.cancelSearchInterest()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-close" (click)="calendarService.cancelSearchInterest()">🗙</div>
+        <h2>Type area of interest:</h2>
+        <span class="new-interest" (click)="reservationsService.searchReservation(interest.value)">
+          <input #interest type="text" (click)="$event.stopPropagation()" (keyup.enter)="interestService.searchReservation(interest.value)">
+        </span>
+        <div *ngIf="calendarService.message() && calendarService.searchingInterest()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
       </div>
     </div>
 
-    <div *ngIf="calendarService.message() && !calendarService.interestupdating()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
   </div>
 </div>

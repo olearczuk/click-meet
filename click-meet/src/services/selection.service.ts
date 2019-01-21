@@ -1,17 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Selection } from "../models/helpers/selection.model";
+import {CalendarService} from "./calendar.service";
+import {AvailabilityService} from "./availability.service";
+import {Reservation} from "../models/reservation.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SelectionService {
   private _selection: Selection;
+  public selectedReservation: Reservation;
 
   constructor() {
     this._selection = new Selection();
+    this.selectedReservation = null;
   }
 
-  initSelection(i: number, j: number) {
+  initSelection(i: number, j: number, notAvailable: boolean) {
+    if (notAvailable) {
+      return;
+    }
+
     this._selection.startRow = i;
     this._selection.startColumn = j;
     this._selection.endRow = i;
@@ -19,8 +28,8 @@ export class SelectionService {
     this._selection.selecting = true;
   }
 
-  updateSelection(i: number, j: number) {
-    if (!this.selecting() || this.startColumn() !== j) {
+  updateSelection(i: number, j: number, notAvailable: boolean) {
+    if (!this.selecting() || this.startColumn() !== j || notAvailable) {
       return;
     }
 
@@ -61,6 +70,7 @@ export class SelectionService {
     this._selection.startColumn = -1;
     this._selection.endRow = -1;
     this._selection.endColumn = -1;
+    this.selectedReservation = null;
   }
 
   selecting() {
