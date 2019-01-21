@@ -14,10 +14,11 @@ const errorHandler = require('./helpers/error-handler');
 const config = require('config.json');
 
 const app = express();
+
 app.use(cors({origin: [
-        "http://0.0.0.0:2137",
-        "http://localhost:4200"
-    ], credentials: true}));
+  "http://localhost:8090"
+], credentials: true}));
+
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 

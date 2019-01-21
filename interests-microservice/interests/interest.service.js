@@ -1,5 +1,5 @@
 const Interest = require('../helpers/db').Interest;
-const ObjectId = require('mongoose').Types.ObjectId;
+const Op = require('sequelize').Op;
 
 module.exports = {
     createInterest,
@@ -10,23 +10,24 @@ module.exports = {
 }
 
 async function createInterest(body) {
-    let professor = ObjectId(body.professor);
+    let professor = body.professor;
     let title = body.title;
 
-    interest = await Interest.findOne({title: title});
+    interest = await Interest.findOne({
+        where: { title: title }
+    });
 
     if (interest) {
         if (interest.professors.indexOf(professor) != -1)
             throw "You already have such interest";
         interest.professors.push(professor);
+        return await interest.save();
     }
-    else 
-        interest = new Interest({title: title, professors: [professor]})
-    return await interest.save();       
+    return await Interest.create({title: title, professors: [professor]})
 }
 
 async function getInterests() {
-    let interests = await Interest.find({});
+    let interests = await Interest.all();
     return interests.map(interest => {
         return {
             title: interest.title,
@@ -36,7 +37,13 @@ async function getInterests() {
 }
 
 async function getProfessorsInterests(professorId) {
-    let interests = await Interest.find({ professors: ObjectId(professorId) });
+    let interests = await Interest.findAll({
+        where: {
+            professors: {
+                [Op.contains]: [professorId]
+            }
+        }
+    });
     return interests.map(interest => {
         return {
             title: interest.title,
@@ -46,7 +53,13 @@ async function getProfessorsInterests(professorId) {
 }
 
 async function getInterestsProfessors(title) {
-    let interests = await Interest.find({ title: {'$regex' : `.*${title}.*`, '$options': 'i' }});
+    let interests = await Interest.findAll({
+        where: {
+            title: {
+                [Op.like]: `%${title}%`
+            }
+        }
+    });
     let professors = [];
     
     interests.forEach(el => {
@@ -59,8 +72,7 @@ async function getInterestsProfessors(title) {
 }
 
 async function deleteInterest(id, professorId) {
-    professorId = ObjectId(professorId);
-    id = ObjectId(id);
+    id = parseInt(id);
     let interest = await Interest.findById(id);
 
     if (!interest)
@@ -74,7 +86,11 @@ async function deleteInterest(id, professorId) {
     interest.professors.splice(index, 1);
 
     if (interest.professors.length == 0)    
-        return Interest.findByIdAndDelete(id);
+        return Interest.destroy({
+            where: {
+                id: id
+            }
+        })
         
     return interest.save();
 }

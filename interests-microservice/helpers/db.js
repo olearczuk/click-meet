@@ -1,14 +1,35 @@
 const config = require('config.json');
-const mongoose = require('mongoose');
+const Sequelize = require('sequelize');
 
-mongoose.connect(process.env.MONGODB_URI || config.databaseURI, function(err, db) {
-    if (err)
-        console.log('Failed to connect to database');
-    else
-        console.log('Successfully connected to database');
+const sequelize = new Sequelize('interests_db', 'postgres', 'postgres', {
+    host: 'postgresql-interests',
+    dialect: 'postgres',
+
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+    },
+    operatorsAliases: false
 });
-mongoose.Promise = global.Promise;
+
+sequelize
+    .authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
+
+const Interest = sequelize.define('interests', {
+    title: Sequelize.TEXT,
+    professors: Sequelize.ARRAY(Sequelize.CHAR(24)),
+  }, {
+    timestamps: false
+  });
 
 module.exports = {
-    Interest: require('../interests/interest.model'),
+    Interest: Interest,
 };

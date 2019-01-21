@@ -1,24 +1,8 @@
 version: "3"
 
-networks:
-  internal:
-
 services:
-  click-meet:
-    container_name: click-meet
-    restart: always
-    build: './click-meet'
-    ports:
-      - "2137:2137"
-    links:
-      - users-microservice
-      - availability-microservice
-      - interests-microservice
-      - reservations-microservice
-    networks:
-      internal:
-        aliases:
-          - click-meet
+
+  # BACKEND SERVICES
 
   users-microservice:
     container_name: users-microservice
@@ -26,13 +10,9 @@ services:
     build: './users-microservice'
     ports:
       - "8080:8080"
-    links:
+    depends_on:
       - mongo-users
       - redis
-    networks:
-      internal:
-        aliases:
-          - users-microservice
 
   availability-microservice:
     container_name: availability-microservice
@@ -40,13 +20,9 @@ services:
     build: './availability-microservice'
     ports:
       - "9010:9010"
-    links:
+    depends_on:
       - mongo-availability
       - redis
-    networks:
-      internal:
-        aliases:
-          - availability-microservice
 
   interests-microservice:
     container_name: interests-microservice
@@ -54,13 +30,9 @@ services:
     build: './interests-microservice'
     ports:
       - "9020:9020"
-    links:
-      - mongo-interests
+    depends_on:
+      - postgresql-interests
       - redis
-    networks:
-      internal:
-        aliases:
-          - interests-microservice
   
   reservations-microservice:
     container_name: reservations-microservice
@@ -68,52 +40,77 @@ services:
     build: './reservations-microservice'
     ports:
       - "9030:9030"
-    links:
+    depends_on:
       - mongo-reservations
       - redis
       - users-microservice
       - availability-microservice
-    networks:
-      internal:
-        aliases:
-          - reservations-microservice
+
+  # FRONTEND SERVICES
+
+  click-meet1:
+    container_name: click-meet1
+    restart: always
+    build: './click-meet'
+    depends_on:
+      - users-microservice
+      - availability-microservice
+      - interests-microservice
+      - reservations-microservice
+
+  click-meet2:
+    container_name: click-meet2
+    restart: always
+    build: './click-meet'
+    depends_on:
+      - users-microservice
+      - availability-microservice
+      - interests-microservice
+      - reservations-microservice
+
+  click-meet3:
+    container_name: click-meet3
+    restart: always
+    build: './click-meet'
+    depends_on:
+      - users-microservice
+      - availability-microservice
+      - interests-microservice
+      - reservations-microservice
+
+  nginx:
+    container_name: nginx
+    build: nginx/
+    ports: 
+      - "8090:8090"
+    depends_on:
+      - click-meet1
+      - click-meet2
+      - click-meet3
+
+  # DATABASE SERVICES
+
+  postgresql-interests:
+    restart: always
+    container_name: postgresql-interests
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=interests_db
+    build: postgres
 
   mongo-reservations:
     container_name: mongo-reservations
     image: mongo
-    networks:
-      internal:
-        aliases:
-          - mongo-reservations
-
-  mongo-interests:
-    container_name: mongo-interests
-    image: mongo
-    networks:
-      internal:
-        aliases:
-          - mongo-interests
 
   mongo-availability:
     container_name: mongo-availability
     image: mongo
-    networks:
-      internal:
-        aliases:
-          - mongo-availability
 
   mongo-users:
     container_name: mongo-users
     image: mongo
-    networks:
-      internal:
-        aliases:
-          - mongo-users
           
   redis:
     container_name: redis
     image: redis
-    networks:
-      internal:
-        aliases:
-          - redis
