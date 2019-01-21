@@ -10,6 +10,7 @@
   "author": "Szymon Olearczuk",
   "license": "MIT",
   "dependencies": {
+    "amqplib": "^0.5.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "client-sessions": "^0.8.0",
