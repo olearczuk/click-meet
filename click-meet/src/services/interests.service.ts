@@ -8,6 +8,7 @@ import {CalendarService} from "./calendar.service";
 import {UserService} from "./user.service";
 import {BehaviorSubject} from "rxjs";
 import {Availability} from "../models/availability.model";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +18,8 @@ export class InterestsService {
     add : '/',
     delete: '/',
     getAll: '/',
-    getProfessorInterests: '/professor/',
-    getInterestsProfessors: '/'
+    getProfessorInterests: '/professors',
+    getInterestsProfessors: '/search/'
   };
 
   private currentInterestsSubject: BehaviorSubject<Interest[]>;
@@ -51,10 +52,27 @@ export class InterestsService {
   }
 
   getProfessorsInterests(user: User) {
-    return this.requestService.get(environment.interestsApiUrl + this.interestsApiPaths.getProfessorInterests + user.id)
+    let params = new HttpParams();
+    params = params.append('professorIds[]', user.id.toString());
+
+    return this.requestService.get(environment.interestsApiUrl + this.interestsApiPaths.getProfessorInterests, params)
       .pipe(map(
         data => {
-          this.currentInterestsSubject.next(data.interests as Interest[]);
+          this.currentInterestsSubject.next(data[0].interests as Interest[]);
+          return data;
+        }
+      ));
+  }
+
+  searchProfessorsInterests(users: User[]) {
+    let params = new HttpParams();
+    users.forEach(u => {
+      params = params.append('professorIds[]', u.id.toString());
+    });
+
+    return this.requestService.get(environment.interestsApiUrl + this.interestsApiPaths.getProfessorInterests, params)
+      .pipe(map(
+        data => {
           return data;
         }
       ));

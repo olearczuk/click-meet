@@ -80,6 +80,7 @@ function info(req, res, next) {
         .then(users => {
             users = users.map(user => {
                 return {
+                    id: user.id,
                     username: user.username,
                     type: user.professor ? 'professor' : 'student',
                 }

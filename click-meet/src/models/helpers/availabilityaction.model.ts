@@ -6,6 +6,7 @@ export class Action {
   deleting: boolean;
   searchingTime: boolean;
   searchingInterest: boolean;
+  searchingTopic: boolean;
   success: boolean;
   error: boolean;
   message: string;

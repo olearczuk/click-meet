@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import {Reservation} from "../models/reservation.model";
 import {RequestService} from "./request.service";
 import {environment} from "../environments/environment";
-import {map} from "rxjs/operators";
+import {concatAll, concatMap, exhaustMap, flatMap, map, mergeMap} from "rxjs/operators";
 import {User} from "../models/user.model";
 import {HttpParams} from "@angular/common/http";
 import {CalendarService} from "./calendar.service";
 import {SelectionService} from "./selection.service";
-import {BehaviorSubject, forkJoin} from "rxjs";
+import {BehaviorSubject, concat, forkJoin, of} from "rxjs";
 import {Availability} from "../models/availability.model";
 import {AvailabilityService} from "./availability.service";
 import {InterestsService} from "./interests.service";
 import {Interest} from "../models/interest.model";
+import {UserService} from "./user.service";
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,12 @@ export class ReservationService {
 
   private currentReservationsSubject;
   public currentReservations;
-
+  private newReservation;
   public foundProfessors;
+
   constructor(private requestService: RequestService, private calendarService: CalendarService,
               private selectionService: SelectionService, private availabilityService: AvailabilityService,
-              private interestService: InterestsService) {
+              private interestService: InterestsService, private userService: UserService) {
 
     this.currentReservationsSubjectFlat = new BehaviorSubject<Reservation[]>(null);
     this.currentReservationsFlat = this.currentReservationsSubjectFlat.asObservable();
@@ -52,6 +54,11 @@ export class ReservationService {
     return this.requestService.put(environment.reservationsApiUrl + this.reversationsApiPaths.addMeeting, reservation)
       .pipe(map(
         data => {
+          reservation.id = data.id;
+          this.currentReservationsSubjectFlat.next(this.currentReservationsSubjectFlat.getValue().concat(reservation));
+          this.currentReservationsSubject.next(this.processReservations(this.currentReservationsSubject.getValue(),
+            [reservation], []));
+
           return data;
         }
       ));
@@ -270,14 +277,19 @@ export class ReservationService {
     this.selectionService.resetSelection();
   }
 
+  getInterests(prof) {
+    return prof.interests.map(x => x.title).join(', ');
+  }
+
   searchReservation(query = "") {
     if (!this.calendarService.searchingTime()) {
+      this.newReservation = new Reservation();
+      this.foundProfessors = null;
+
       this.calendarService.setSearchingTime(true);
       this.calendarService.resetMessage();
       return;
     }
-
-    console.log(this.selectionService.startRow())
 
     if (this.selectionService.startRow() === null || this.selectionService.startRow() === undefined ||
         this.selectionService.startRow() < 0) {
@@ -326,28 +338,52 @@ export class ReservationService {
       endDate.getSeconds(),
       endDate.getMilliseconds()));
 
+    this.newReservation.startTime = startTime;
+    this.newReservation.endTime = endTime;
+
     forkJoin(
       this.availabilityService.getProfessors(availability),
       this.interestService.searchProfessors(interest),
       this.getBusyProfessors(startTime, endTime)
-    ).subscribe( resp => {
-      console.log('Available:');
-      console.log(resp[0]);
-
-      console.log('Interested:');
-      console.log(resp[1]);
-
-      console.log('Busy:');
-      console.log(resp[2]);
-
-      console.log('Total: ');
-      this.foundProfessors = resp[0].filter(prof => resp[1].indexOf(prof) !== -1)
-                                    .filter(prof => resp[2].indexOf(prof) === -1);
+    ).pipe(map(resp => {
+      return resp[0].filter(prof => resp[1].indexOf(prof) !== -1).filter(prof => resp[2].indexOf(prof) === -1).map(u => {
+        return new User(u, 'a', 'a', 'a', true);
+      });
+    })).pipe(exhaustMap((users) => {
+      if (users.length) {
+        return forkJoin(
+          this.interestService.searchProfessorsInterests(users),
+          this.userService.getInformationAboutUsers(users))
+      }
+      else {
+        return of([])
+      }
+    })).subscribe( resp => {
+      if (resp.length) {
+        this.foundProfessors = [resp[0], resp[1]].reduce((a, b) => a.map((c, i) => Object.assign({}, c, b[i])));
+      } else {
+        this.foundProfessors = [];
+      }
     }, err => {
       console.log(err);
     });
+  }
 
-    //this.calendarService.setSearchingTime(false);
-    //this.selectionService.resetSelection();
+  arrangeMeeting(profId, topic) {
+    if (!this.calendarService.searchingTopic()) {
+      this.newReservation.professorId = profId;
+      this.calendarService.setSearchingTopic(true);
+      this.calendarService.resetMessage();
+      return;
+    }
+    this.newReservation.topic = topic;
+
+    this.addReservation(this.newReservation).subscribe(resp => {
+      console.log(resp);
+      this.calendarService.cancelSearchInterest();
+    }, err => {
+      console.log(err);
+      this.calendarService.cancelSearchInterest();
+    });
   }
 }

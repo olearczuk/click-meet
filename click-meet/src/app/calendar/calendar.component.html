@@ -99,9 +99,29 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-close" (click)="calendarService.cancelSearchInterest()">🗙</div>
         <h2>Type area of interest:</h2>
-        <span class="new-interest" (click)="reservationsService.searchReservation(interest.value)">
-          <input #interest type="text" (click)="$event.stopPropagation()" (keyup.enter)="interestService.searchReservation(interest.value)">
-        </span>
+        <div class="search" (click)="reservationsService.searchReservation(interest.value)">
+          <input #interest type="text" (click)="$event.stopPropagation()" (keyup.enter)="reservationsService.searchReservation(interest.value)">
+        </div>
+
+        <h2 *ngIf="reservationsService.foundProfessors">Found professors:</h2>
+        <ul class="professors" *ngIf="reservationsService.foundProfessors">
+          <li *ngFor="let professor of reservationsService.foundProfessors">
+              <div class="professor">
+                <div><b>Professor:</b> {{professor.username}}</div>
+                <div><b>Interested in:</b> {{reservationsService.getInterests(professor)}}</div>
+
+                <div *ngIf="calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(professor.id, topic.value)">
+                    <b>Topic: </b>
+                    <input #topic type="text" (click)="$event.stopPropagation()" (keyup.enter)="reservationsService.arrangeMeeting(professor.id, topic.value)">
+                    <span class="button-meet" >Meet me</span>
+                </div>
+                <div *ngIf="!calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(professor.id, '')">
+                  <span class="button-meet" >Meet me</span>
+                </div>
+
+              </div>
+          </li>
+        </ul>
         <div *ngIf="calendarService.message() && calendarService.searchingInterest()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
       </div>
     </div>

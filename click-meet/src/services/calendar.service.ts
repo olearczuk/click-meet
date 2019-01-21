@@ -169,9 +169,18 @@ export class CalendarService {
     this.action.searchingInterest = val;
   }
 
+  searchingTopic() {
+    return this.action.searchingTopic;
+  }
+
+  setSearchingTopic(val) {
+    this.action.searchingTopic = val;
+  }
+
   cancelSearchInterest() {
     this.action.searchingInterest = false;
     this.action.searchingTime = false;
+    this.action.searchingTopic = false;
     this.resetMessage();
     this.selectionService.resetSelection();
   }

@@ -88,61 +88,59 @@
   }
 }
 
-.calendar-options {
-  .button {
-    cursor: pointer;
+.button {
+  cursor: pointer;
+
+  &:before {
+    content: ' ';
+    margin: 5px;
+    background: linear-gradient(#F0CB35, #C02425);
+    border: none;
+    padding: 4px 6px;
+    color: white;
+    border-radius: 5px;
+    display: inline-block;
+  }
+
+  &.button-add:before {
+    content: '＋';
+  }
+
+  &.button-remove:before {
+    content: '－';
+  }
+
+  &.button-busy:before {
+    content: '⏲';
+    padding: 3.5px 4.5px;
+  }
+
+  &.button-delete:before {
+    content: '✕';
+  }
+
+  &.button-cancel:before {
+    content: '🗙';
+  }
+
+  &.button-interest:before {
+    content: '★';
+  }
+
+  &.button-search:before {
+    content: '⚲';
+  }
+
+  &.button-active:before {
+    content: '🗸';
+    padding: 3.5px 6.5px;
+  }
+
+  &.button-disabled {
+    cursor: not-allowed;
 
     &:before {
-      content: ' ';
-      margin: 5px;
-      background: linear-gradient(#F0CB35, #C02425);
-      border: none;
-      padding: 4px 6px;
-      color: white;
-      border-radius: 5px;
-      display: inline-block;
-    }
-
-    &.button-add:before {
-      content: '＋';
-    }
-
-    &.button-remove:before {
-      content: '－';
-    }
-
-    &.button-busy:before {
-      content: '⏲';
-      padding: 3.5px 4.5px;
-    }
-
-    &.button-delete:before {
-      content: '✕';
-    }
-
-    &.button-cancel:before {
-      content: '🗙';
-    }
-
-    &.button-interest:before {
-      content: '★';
-    }
-
-    &.button-search:before {
-      content: '⚲';
-    }
-
-    &.button-active:before {
-      content: '🗸';
-      padding: 3.5px 6.5px;
-    }
-
-    &.button-disabled {
-      cursor: not-allowed;
-
-      &:before {
-        background: linear-gradient(#919191, #737373);
-      }
+      background: linear-gradient(#919191, #737373);
     }
   }
 }
@@ -245,6 +243,54 @@
     border-radius: 5px;
     display: inline-block;
     cursor: pointer;
+  }
+
+  .search {
+    text-align: center;
+
+    &:after {
+      content: 'A';
+      margin: 5px;
+      background: linear-gradient(#F0CB35, #C02425);
+      border: none;
+      padding: 4px 6px;
+      color: white;
+      border-radius: 5px;
+      display: inline-block;
+      cursor: pointer;
+    }
+  }
+
+  .professors {
+    max-width: 350px;
+
+    li {
+      display: flex;
+
+      &:before {
+        height: auto;
+      }
+    }
+
+    .button-meet {
+      cursor: pointer;
+      content: ' ';
+      margin: 5px 0;
+      background: linear-gradient(#F0CB35, #C02425);
+      border: none;
+      padding: 7px;
+      color: white;
+      border-radius: 5px;
+      display: inline-block;
+      font-weight: 100;
+    }
+  }
+
+  .professor {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 5px;
+    width: 90%;
   }
 }
 
