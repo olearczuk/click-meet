@@ -10,11 +10,12 @@ router.post('/', [
 
 router.get('/', interestMiddleware.isLoggedIn, getInterests);
 
-router.get('/professor/:professorId', [
-    check('professorId').isMongoId(),
+router.get('/professors', [
+    check('professorIds').isArray(),
+    check('professorIds.*').isMongoId(),
 ], interestMiddleware.checkValidationErrors, interestMiddleware.isLoggedIn, getProfessorsInterests);
 
-router.get('/:title', [
+router.get('/search/:title', [
     check('title').not().isEmpty()
 ], interestMiddleware.checkValidationErrors, interestMiddleware.isLoggedIn, getInterestsProfessors);
 
@@ -41,10 +42,8 @@ function getInterests(req, res, next) {
 }
 
 function getProfessorsInterests(req, res, next) {
-    interestService.getProfessorsInterests(req.params.professorId)
-        .then(interests => res.status(200).json({
-            interests: interests
-        }))
+    interestService.getProfessorsInterests(req.query.professorIds)
+        .then(results => res.status(200).json(results))
         .catch(err => next(err));
 }
 

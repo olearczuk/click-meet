@@ -36,20 +36,32 @@ async function getInterests() {
     });
 }
 
-async function getProfessorsInterests(professorId) {
-    let interests = await Interest.findAll({
-        where: {
-            professors: {
-                [Op.contains]: [professorId]
+async function getProfessorsInterests(professorIds) {
+    let results = [];
+
+    for (let i = 0; i < professorIds.length; i++) {
+        let professorId = professorIds[i];
+        let interests = await Interest.findAll({
+            where: {
+                professors: {
+                    [Op.contains]: [professorId]
+                }
             }
-        }
-    });
-    return interests.map(interest => {
-        return {
-            title: interest.title,
-            id: interest.id,
-        }
-    });
+        });
+
+        interests = interests.map(interest => {
+            return {
+                title: interest.title,
+                id: interest.id,
+            }
+        });
+        
+        results.push({
+            professorId: professorId,
+            interests: interests,
+        });
+    }
+    return results;
 }
 
 async function getInterestsProfessors(title) {
