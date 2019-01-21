@@ -20,12 +20,52 @@
   }
 
   .dashboard-nav {
+    position: relative;
+    
     .error-message {
       color: #a94442;
       background-color: #f2dede;
       border: 1px solid #ebccd1;
       padding: 10px 15px;
       border-radius: 5px;
+    }
+  }
+}
+
+.logout {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-decoration: none;
+  font-size: 17px;
+  vertical-align: middle;
+  display: inline-block;
+  background: linear-gradient(#F0CB35, #C02425);
+  margin: 5px;
+  padding: 7px 10px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.meetings {
+  max-width: 250px;
+  padding-left: 0;
+
+  .meeting {
+    margin: 15px;
+  }
+
+  li {
+    display: flex;
+
+    &:before {
+      content: '';
+      width: 8px;
+      background: linear-gradient(#F0CB35, #C02425);
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 7px;
     }
   }
 }

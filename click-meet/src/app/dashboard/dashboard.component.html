@@ -3,9 +3,19 @@
 
   <div class="dashboard">
     <div class="dashboard-nav">
-      <p> Welcome, {{ currentUser?.username }} </p>
-      <a href="#" (click)="!!logout()">Logout</a>
+      <a class="logout" href="#" (click)="!!logout()">✕</a>
       <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
+
+      <h2>Meetings</h2>
+      <ul class="meetings">
+        <li class="meeting" *ngFor="let reservation of reservations">
+          <div>
+            <div><b> Topic:</b> {{reservation.topic}}</div>
+            <div><b> Day: </b> {{calendarService.day(reservation.startTime.getDay())}} </div>
+            <div><b> Hours: </b> {{calendarService.convertDate(reservation.startTime)}} - {{calendarService.convertDate(reservation.endTime)}}</div>
+          </div>
+        </li>
+      </ul>
     </div>
     <div class="dashboard-container">
       <app-calendar [currentUser]="currentUser"></app-calendar>

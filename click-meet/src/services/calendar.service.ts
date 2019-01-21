@@ -278,4 +278,9 @@ export class CalendarService {
   nextWeek() {
     this.currentDateSubject.next(this.addDays(7));
   }
+
+  convertDate(date) {
+    return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(),
+      date.getUTCSeconds(), date.getUTCMilliseconds()).toLocaleTimeString();
+  }
 }

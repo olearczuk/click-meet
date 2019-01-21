@@ -369,9 +369,10 @@ export class ReservationService {
     });
   }
 
-  arrangeMeeting(profId, topic) {
+  arrangeMeeting(studId, profId, topic) {
     if (!this.calendarService.searchingTopic()) {
       this.newReservation.professorId = profId;
+      this.newReservation.studentId = studId;
       this.calendarService.setSearchingTopic(true);
       this.calendarService.resetMessage();
       return;

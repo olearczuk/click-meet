@@ -31,7 +31,8 @@ export class CalendarComponent implements OnInit {
     this.reservationsService.getMyReservations(this.calendarService.calendarStart(),
       this.calendarService.calendarEnd()).subscribe(() => {});
 
-    this.reservationsService.currentReservationsFlat.subscribe(() => {}, error => {
+    this.reservationsService.currentReservationsFlat.subscribe((res) => {
+    }, error => {
       console.log(error);
     });
     this.interestService.getProfessorsInterests(this.currentUser).subscribe(() => {});

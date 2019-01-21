@@ -112,10 +112,10 @@
 
                 <div *ngIf="calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(professor.id, topic.value)">
                     <b>Topic: </b>
-                    <input #topic type="text" (click)="$event.stopPropagation()" (keyup.enter)="reservationsService.arrangeMeeting(professor.id, topic.value)">
+                    <input #topic type="text" (click)="$event.stopPropagation()" (keyup.enter)="reservationsService.arrangeMeeting(currentUser.id, professor.id, topic.value)">
                     <span class="button-meet" >Meet me</span>
                 </div>
-                <div *ngIf="!calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(professor.id, '')">
+                <div *ngIf="!calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(currentUser.id, professor.id, '')">
                   <span class="button-meet" >Meet me</span>
                 </div>
 
