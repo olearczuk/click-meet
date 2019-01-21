@@ -18,8 +18,9 @@ router.post('/register', [
 
 router.post('/logout', userMiddleware.isLoggedIn, logout);
 
-router.get('/:id/info', [
-    check('id').isMongoId(),
+router.get('/info', [
+    check('ids').isArray(),
+    check('ids.*').isMongoId(),
 ], userMiddleware.checkValidationErrors, userMiddleware.isLoggedIn, info);
 
 router.get('/professors', userMiddleware.isLoggedIn, getProfessors)
@@ -75,14 +76,15 @@ function getLogin(req, res) {
 }
 
 function info(req, res, next) {
-    userService.findById(req.params.id)
-        .then(user => {
-            if (!user)
-                throw 'User not found';
-            res.json({
-                username: user.username,
-                type: user.professor ? 'professor' : 'student',
+    userService.findUsersByIds(req.query.ids)
+        .then(users => {
+            users = users.map(user => {
+                return {
+                    username: user.username,
+                    type: user.professor ? 'professor' : 'student',
+                }
             });
+            res.json(users);
         })
         .catch(err => next(err));
 }
