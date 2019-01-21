@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import {RequestService} from "./request.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, forkJoin, of} from "rxjs";
 import {User} from "../models/user.model";
 import {Availability} from "../models/availability.model";
 import {environment} from "../environments/environment";
-import {map} from "rxjs/operators";
+import {map, flatMap, concat, merge} from "rxjs/operators";
 import {CalendarService} from "./calendar.service";
 import {SelectionService} from "./selection.service";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -51,12 +52,17 @@ export class AvailabilityService {
       }));
   }
 
-  getProfessors() {
-
+  getProfessors(availability: Availability) {
+    return this.requestService.get(environment.availabilityApiUrl + this.availabilityApiPaths.getProfessors,
+      new HttpParams().set('day', availability.day.toString()).set('start_hour', availability.start_hour.toString())
+        .set('end_hour', availability.end_hour.toString())).
+      pipe(map(data => {
+        return data.professors;
+      }));
   }
 
   addAvailability() {
-    if (this.calendarService.removing() || this.calendarService.interestupdating()) {
+    if (this.calendarService.cantAdding()) {
       return;
     }
 
@@ -77,7 +83,7 @@ export class AvailabilityService {
   }
 
   removeAvailability() {
-    if (this.calendarService.adding() || this.calendarService.interestupdating()) {
+    if (this.calendarService.cantRemoving()) {
       return;
     }
 
@@ -94,34 +100,32 @@ export class AvailabilityService {
     let second_start_hour = this.calendarService.time(this.selectionService.endRow()) + this.calendarService.interval();
     let second_end_hour = Math.max(... availabilities.map(av => av.end_hour));
 
-    this.deleteAvailabilities(availabilities).subscribe(data => {
+    this.deleteAvailabilities(availabilities).pipe(concat(
+      this.addMissingAvailability(first_start_hour, first_end_hour)
+    )).pipe(concat(
+      this.addMissingAvailability(second_start_hour, second_end_hour)
+    )).subscribe(() => {
       this.calendarService.setSuccess(true, "Successfully removed availability");
+      this.calendarService.setRemoving(false);
+      this.selectionService.resetSelection();
     }, error => {
       this.calendarService.setError(true, error.message);
+      this.calendarService.setRemoving(false);
+      this.selectionService.resetSelection();
     });
+  }
 
-    if (first_start_hour < first_end_hour) {
+  addMissingAvailability(start, end) {
+    if (start < end) {
       let availability = new Availability();
       availability.day = this.selectionService.startColumn();
-      availability.start_hour = first_start_hour;
-      availability.end_hour = first_end_hour;
-      this.createAvailability(availability).subscribe(() => {}, error => {
-        this.calendarService.setError(true, error.message);
-      });
+      availability.start_hour = start;
+      availability.end_hour = end;
+
+      return this.createAvailability(availability);
     }
 
-    if (second_start_hour < second_end_hour) {
-      let availability = new Availability();
-      availability.day = this.selectionService.startColumn();
-      availability.start_hour = second_start_hour;
-      availability.end_hour = second_end_hour;
-      this.createAvailability(availability).subscribe(() => {}, error => {
-        this.calendarService.setError(true, error.message);
-      });
-    }
-
-    this.calendarService.setRemoving(false);
-    this.selectionService.resetSelection();
+    return of(null);
   }
 
   calculateAvailability() {

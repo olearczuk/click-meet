@@ -7,6 +7,23 @@
   margin: 15px;
 }
 
+.title {
+  margin: 20px 0;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.go-left, .go-right {
+  font-size: 12px;
+  vertical-align: middle;
+  display: inline-block;
+  background: linear-gradient(#F0CB35, #C02425);
+  margin: 5px;
+  padding: 7px 10px;
+  color: white;
+  cursor: pointer;
+}
+
 .calendar {
   border-collapse: collapse;
 
@@ -28,6 +45,7 @@
 
 
   td:not(.time) {
+    padding: 5px;
     background-color: #dfe1e6;
 
     &.available {
@@ -36,6 +54,28 @@
 
     &.selected {
       background-color: #9C9EA3;
+    }
+
+    &.reservation {
+      color: #155724;
+      background-color: #d4edda;
+      //border: 2px solid #c3e6cb;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    &.busy {
+      color: #a94442;
+      background-color: #f2dede;
+      cursor: pointer;
+      //border: 2px solid #ebccd1;
+    }
+
+    &.reservation.selected {
+      color: #856404;
+      background-color: #fff3cd;
+      cursor: auto;
+      //border-color: #ffeeba;
     }
   }
 
@@ -49,25 +89,6 @@
 }
 
 .calendar-options {
-  .message {
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin: 5px;
-    border: 1px solid #000000;
-
-    &.error {
-      color: #a94442;
-      background-color: #f2dede;
-      border-color: #ebccd1;
-    }
-
-    &.success {
-      color: #155724;
-      background-color: #d4edda;
-      border-color: #c3e6cb;
-    }
-  }
-
   .button {
     cursor: pointer;
 
@@ -88,6 +109,15 @@
 
     &.button-remove:before {
       content: '－';
+    }
+
+    &.button-busy:before {
+      content: '⏲';
+      padding: 3.5px 4.5px;
+    }
+
+    &.button-delete:before {
+      content: '✕';
     }
 
     &.button-cancel:before {
@@ -114,6 +144,25 @@
         background: linear-gradient(#919191, #737373);
       }
     }
+  }
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin: 5px;
+  border: 1px solid #000000;
+
+  &.error {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+  }
+
+  &.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
   }
 }
 
@@ -183,19 +232,19 @@
         display: inline-block;
         cursor: pointer;
       }
-
-      & .new-interest:after {
-        content: '＋';
-        margin: 5px;
-        background: linear-gradient(#F0CB35, #C02425);
-        border: none;
-        padding: 4px 6px;
-        color: white;
-        border-radius: 5px;
-        display: inline-block;
-        cursor: pointer;
-      }
     }
+  }
+
+  .new-interest:after {
+    content: '＋';
+    margin: 5px;
+    background: linear-gradient(#F0CB35, #C02425);
+    border: none;
+    padding: 4px 6px;
+    color: white;
+    border-radius: 5px;
+    display: inline-block;
+    cursor: pointer;
   }
 }
 
