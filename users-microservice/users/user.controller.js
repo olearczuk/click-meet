@@ -60,7 +60,7 @@ function logout(req, res) {
     }
 }
 
-function getLogin(req, res) {
+function getLogin(req, res, next) {
     userService.findById(req.session.user)
         .then(user => {
             if (!user)
