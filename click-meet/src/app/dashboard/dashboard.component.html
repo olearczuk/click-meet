@@ -3,15 +3,15 @@
 
   <div class="dashboard">
     <div class="dashboard-nav">
-      <a class="logout" href="#" (click)="!!logout()">✕</a>
+      <a class="logout" href="#" (click)="!!logout()">Logout</a>
       <div class="error-message" [hidden]="!errorMessage">{{errorMessage}}</div>
 
-      <h2>Meetings</h2>
+      <h2>Meetings in week</h2>
       <ul class="meetings">
         <li class="meeting" *ngFor="let reservation of reservations">
           <div>
             <div><b> Topic:</b> {{reservation.topic}}</div>
-            <div><b> Day: </b> {{calendarService.day(reservation.startTime.getDay())}} </div>
+            <div><b> Day: </b> {{calendarService.day(reservation.startTime.getDay() - 1)}} </div>
             <div><b> Hours: </b> {{calendarService.convertDate(reservation.startTime)}} - {{calendarService.convertDate(reservation.endTime)}}</div>
           </div>
         </li>

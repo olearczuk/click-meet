@@ -27,7 +27,6 @@ export class DashboardComponent implements OnInit {
         this.reservations = res.filter(reservation => !!reservation.studentId).sort((a, b) => {
           return a.startTime - b.startTime;
         });
-        console.log(this.reservations);
       }
     });
   }

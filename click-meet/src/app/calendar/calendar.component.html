@@ -1,4 +1,5 @@
 <div>
+  <h2 class="calendar-name">Your calendar</h2>
   <div class="title">
     <span class="go-left" (click)="calendarService.previousWeek()">◀</span>
     {{calendarService.getDateStart()}} - {{calendarService.getDateEnd()}}
@@ -20,7 +21,7 @@
               class="reservation" [ngClass]="{'busy': reservationsService.reservationBusy(i,j),
               'selected': reservationsService.reservationSelected(i, j)}"
               (click)="reservationsService.selectForDelete(i, j)">
-            {{ reservationsService.reservationBusy(i, j) ? "Busy" : "Meeting"}}
+            {{ reservationsService.reservationBusy(i, j) ? "Busy" : reservationsService.getTopic(i,j)}}
           </td>
           <td *ngIf="!reservationsService.reservationExists(i,j)"
               [ngClass]="{'available':  availabilityService.availabilityExists(i, j),
@@ -104,13 +105,14 @@
         </div>
 
         <h2 *ngIf="reservationsService.foundProfessors">Found professors:</h2>
+        <p class ="professors-nf" *ngIf="reservationsService.foundProfessors && reservationsService.foundProfessors.length === 0">No one available found.</p>
         <ul class="professors" *ngIf="reservationsService.foundProfessors">
           <li *ngFor="let professor of reservationsService.foundProfessors">
               <div class="professor">
                 <div><b>Professor:</b> {{professor.username}}</div>
                 <div><b>Interested in:</b> {{reservationsService.getInterests(professor)}}</div>
 
-                <div *ngIf="calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(professor.id, topic.value)">
+                <div *ngIf="calendarService.searchingTopic()" (click)="reservationsService.arrangeMeeting(currentUser.id, professor.id, topic.value)">
                     <b>Topic: </b>
                     <input #topic type="text" (click)="$event.stopPropagation()" (keyup.enter)="reservationsService.arrangeMeeting(currentUser.id, professor.id, topic.value)">
                     <span class="button-meet" >Meet me</span>

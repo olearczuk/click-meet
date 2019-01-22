@@ -7,6 +7,14 @@
   margin: 15px;
 }
 
+.calendar-options {
+  max-width: 320px;
+}
+
+.calendar-name {
+  text-align: center;
+}
+
 .title {
   margin: 20px 0;
   font-size: 1.5em;
@@ -249,16 +257,22 @@
     text-align: center;
 
     &:after {
-      content: 'A';
+      content: '⚲';
       margin: 5px;
       background: linear-gradient(#F0CB35, #C02425);
       border: none;
-      padding: 4px 6px;
+      padding: 1px 7px 5px 7px;
       color: white;
       border-radius: 5px;
       display: inline-block;
       cursor: pointer;
+      position: relative;
+      top: -3px;
     }
+  }
+
+  .professors-nf {
+    text-align: center;
   }
 
   .professors {

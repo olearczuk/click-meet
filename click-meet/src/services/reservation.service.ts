@@ -201,6 +201,10 @@ export class ReservationService {
     return rowEnd - rowStart;
   }
 
+  getTopic(i, j) {
+    return  this.currentReservationsSubject.getValue()[i][j].topic;
+  }
+
   markBusy() {
     if (this.calendarService.cantMarking()) {
       return;
@@ -215,6 +219,7 @@ export class ReservationService {
     let day = this.selectionService.startColumn();
     let startHour = this.calendarService.time(this.selectionService.startRow());
     let endHour = this.calendarService.time(this.selectionService.endRow()) + this.calendarService.interval();
+
     let startDate = this.calendarService.addDays(day);
     let endDate = this.calendarService.addDays(day);
     startDate.setHours(startHour/ 60, startHour % 60, 0, 0);
@@ -238,9 +243,9 @@ export class ReservationService {
       endDate.getMilliseconds()));
 
     this.addBusy(res).subscribe(resp => {
-      console.log(resp);
+      this.calendarService.setSuccess(true, "Successfully marked as busy");
     }, err => {
-      console.log(err);
+      this.calendarService.setError(true, err.message);
     });
 
     this.calendarService.setMarking(false);
@@ -251,9 +256,9 @@ export class ReservationService {
     if (!this.calendarService.deleting()) {
       return;
     }
-    this.selectionService.selectedReservation = this.currentReservationsSubject.getValue()[i][j];
 
-    console.log(this.selectionService.selectedReservation);
+    this.calendarService.resetMessage();
+    this.selectionService.selectedReservation = this.currentReservationsSubject.getValue()[i][j];
   }
 
   deleteMeeting() {
@@ -267,10 +272,15 @@ export class ReservationService {
       return;
     }
 
+    if (!this.selectionService.selectedReservation) {
+      this.calendarService.setError(true, "You need to select something");
+      return;
+    }
+
     this.deleteReservation(this.selectionService.selectedReservation).subscribe(x => {
-      console.log(x);
+      this.calendarService.setSuccess(true, "Successfully deleted a reservation");
     }, error => {
-      console.log(error);
+      this.calendarService.setError(true, error.message);
     });
 
     this.calendarService.setDeleting(false);
@@ -365,7 +375,7 @@ export class ReservationService {
         this.foundProfessors = [];
       }
     }, err => {
-      console.log(err);
+      this.calendarService.setError(true, err.message);
     });
   }
 
@@ -380,11 +390,9 @@ export class ReservationService {
     this.newReservation.topic = topic;
 
     this.addReservation(this.newReservation).subscribe(resp => {
-      console.log(resp);
-      this.calendarService.cancelSearchInterest();
+      this.calendarService.setSuccess(true, "Successfully added a meeting");
     }, err => {
-      console.log(err);
-      this.calendarService.cancelSearchInterest();
+      this.calendarService.setError(true, err.message);
     });
   }
 }
