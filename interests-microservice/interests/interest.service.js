@@ -68,7 +68,7 @@ async function getInterestsProfessors(title) {
     let interests = await Interest.findAll({
         where: {
             title: {
-                [Op.like]: `%${title}%`
+                [Op.iLike]: `%${title}%`
             }
         }
     });
