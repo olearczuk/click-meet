@@ -83,6 +83,7 @@ function info(req, res, next) {
                     id: user.id,
                     username: user.username,
                     type: user.professor ? 'professor' : 'student',
+                    email: user.email,
                 }
             });
             res.json(users);

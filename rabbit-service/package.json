@@ -1,0 +1,15 @@
+{
+  "name": "rabbit-service",
+  "version": "1.0.0",
+  "description": "Service responsible for handling RabbitMQ messages",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Szymon Olearczuk",
+  "license": "MIT",
+  "dependencies": {
+    "amqplib": "^0.5.3",
+    "nodemailer": "^5.1.1"
+  }
+}

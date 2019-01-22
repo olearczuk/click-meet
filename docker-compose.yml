@@ -6,43 +6,41 @@ services:
 
   users-microservice:
     container_name: users-microservice
-    restart: always
     build: './users-microservice'
     ports:
       - "8080:8080"
-    depends_on:
+    links:
       - mongo-users
       - redis
 
   availability-microservice:
     container_name: availability-microservice
-    restart: always
     build: './availability-microservice'
     ports:
       - "9010:9010"
-    depends_on:
+    links:
       - mongo-availability
       - redis
 
   interests-microservice:
     container_name: interests-microservice
-    restart: always
     build: './interests-microservice'
     ports:
       - "9020:9020"
-    depends_on:
+    links:
       - postgresql-interests
       - redis
   
   reservations-microservice:
     container_name: reservations-microservice
-    restart: always
+    restart: on-failure:15
     build: './reservations-microservice'
     ports:
       - "9030:9030"
-    depends_on:
+    links:
       - mongo-reservations
       - redis
+      - rabbit
       - users-microservice
       - availability-microservice
 
@@ -50,9 +48,8 @@ services:
 
   click-meet1:
     container_name: click-meet1
-    restart: always
     build: './click-meet'
-    depends_on:
+    links:
       - users-microservice
       - availability-microservice
       - interests-microservice
@@ -60,9 +57,8 @@ services:
 
   click-meet2:
     container_name: click-meet2
-    restart: always
     build: './click-meet'
-    depends_on:
+    links:
       - users-microservice
       - availability-microservice
       - interests-microservice
@@ -70,9 +66,8 @@ services:
 
   click-meet3:
     container_name: click-meet3
-    restart: always
     build: './click-meet'
-    depends_on:
+    links:
       - users-microservice
       - availability-microservice
       - interests-microservice
@@ -83,7 +78,7 @@ services:
     build: nginx/
     ports: 
       - "8090:8090"
-    depends_on:
+    links:
       - click-meet1
       - click-meet2
       - click-meet3
@@ -91,7 +86,6 @@ services:
   # DATABASE SERVICES
 
   postgresql-interests:
-    restart: always
     container_name: postgresql-interests
     environment:
       - POSTGRES_USER=postgres
@@ -114,3 +108,18 @@ services:
   redis:
     container_name: redis
     image: redis
+
+  # RabbitMQ
+
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_PASS=pass
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_VHOST=vhost
+
+  rabbit-service:
+    build: './rabbit-service'
+    links:
+      - rabbit
