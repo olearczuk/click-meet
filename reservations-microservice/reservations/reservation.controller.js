@@ -47,9 +47,11 @@ function createStudentsReservation(req, res, next) {
                 .then(response => {
                     rabbitService.send({
                         email: response.email,
-                        text: `Hello ${response.username}! One of the students has just arranged a meeting with you. \
-                               Meeting topic is "${req.body.topic}". It starts at ${req.body.startTime} and ends at \
-                               ${req.body.endTime}. If you cannot participate delete the meeting in your calendar.`
+                        text: createStudentsReservationEmailTemplate(
+                            response.username,
+                            req.body.topic,
+                            new Date(req.body.startTime).toUTCString(),
+                            new Date(req.body.endTime).toUTCString())
                     });
                     res.status(201).json({ id: reservation.id });
                 })
@@ -90,9 +92,11 @@ function deleteReservation(req, res, next) {
                 .then(response => {
                     rabbitService.send({
                         email: response.email,
-                        text: `Hello ${response.username}! One of the professors has just deleted a meeting with you. \
-                               Meeting topic was "${req.body.topic}". It supposed to start at ${req.body.startTime} and \ 
-                               end at ${req.body.endTime}.`
+                        text: deleteReservationEmailTemplate(
+                            response.username,
+                            req.body.topic,
+                            new Date(req.body.startTime).toUTCString(),
+                            new Date(req.body.endTime).toUTCString())
                     });
                     res.status(201).json({});
                 })
@@ -133,6 +137,72 @@ function getBusyProfessors(req, res, next) {
         .catch(err => next(err));
 }
 
+function createStudentsReservationEmailTemplate(username, topic, startTime, endTime) {
+    return  '   <html> <table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="red">  '  +
+            '     <tr>  '  +
+            '       <td align="center" valign="top" width="100%" style="background: linear-gradient(to bottom, #f0cb35 0%, #c02425 100%); padding: 50px;">  '  +
+            '                   <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 650px;">  '  +
+            '                       <tr>  '  +
+            '                           <td align="center" cellpadding="0" cellspacing="0" style="text-align: center; padding-bottom: 30px; color: #fff; font-family: Arial, serif; font-size: 32px;">  '  +
+            '                               click&meet  '  +
+            '                           </td>  '  +
+            '                       </tr>  '  +
+            '                       <tr>  '  +
+            '                           <td align="center" cellpadding="0" cellspacing="0" style="font-family: Arial, sans-serif; font-size: 18px; border-radius: 3px; background: #fff; box-shadow: 0 0 20px 0 rgba(0,0,0,.3); padding: 15px 60px; margin: 15px;">  '  +
+            '                               <table width="100%" cellpadding="0" cellspacing="0">  '  +
+            '                                 <tr>  '  +
+            '                                   <td align="center" cellpadding="0" cellspacing="0" style="text-align: center; padding: 25px; font-family: Arial, serif; font-size: 22px;">Hello ${username}</td>  '  +
+            '                                 </tr>  '  +
+            '                                 <tr>  '  +
+            '                                   <td align="left" cellpadding="0" cellspacing="0" style="text-align: left; padding-bottom: 10px; font-family: Arial, serif; font-size: 18px;">One of the students has just arranged a meeting with you. Meeting title is "${topic}". It starts at ${dateStart} and ends at ${dateEnd}.</td>  '  +
+            '                                 </tr>  '  +
+            '                                 <tr>  '  +
+            '                                   <td align="left" cellpadding="0" cellspacing="0" style="text-align: left; padding-bottom: 30px; font-family: Arial, serif; font-size: 18px;">If you cannot participate delete the meeting in your calendar.</td>  '  +
+            '                                 </tr>  '  +
+            '                                 <tr>  '  +
+            '                                   <td align="right" cellpadding="0" cellspacing="0" style="text-align: right; padding-bottom: 30px; font-family: Arial, serif; font-size: 18px;">Best regards,<br/>  '  +
+            '                                     click&meet service  '  +
+            '                                   </td>  '  +
+            '                                 </tr>  '  +
+            '                         </td>  '  +
+            '                       </tr>  '  +
+            '                   </table>  '  +
+            '           </td>  '  +
+            '       </tr>  '  +
+            '  </table> </html>' ;
+}
 
-
-
+function deleteReservationEmailTemplate(username, topic, startTime, endTime) {
+    return  '   <table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="red">  '  +
+        '     <tr>  '  +
+        '       <td align="center" valign="top" width="100%" style="background: linear-gradient(to bottom, #f0cb35 0%, #c02425 100%); padding: 50px;">  '  +
+        '                   <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 650px;">  '  +
+        '                       <tr>  '  +
+        '                           <td align="center" cellpadding="0" cellspacing="0" style="text-align: center; padding-bottom: 30px; color: #fff; font-family: Arial, serif; font-size: 32px;">  '  +
+        '                               click&meet  '  +
+        '                           </td>  '  +
+        '                       </tr>  '  +
+        '                       <tr>  '  +
+        '                           <td align="center" cellpadding="0" cellspacing="0" style="font-family: Arial, sans-serif; font-size: 18px; border-radius: 3px; background: #fff; box-shadow: 0 0 20px 0 rgba(0,0,0,.3); padding: 15px 60px; margin: 15px;">  '  +
+        '                               <table width="100%" cellpadding="0" cellspacing="0">  '  +
+        '                                 <tr>  '  +
+        '                                   <td align="center" cellpadding="0" cellspacing="0" style="text-align: center; padding: 25px; font-family: Arial, serif; font-size: 22px;">Hello ${username}</td>  '  +
+        '                                 </tr>  '  +
+        '                                 <tr>  '  +
+        '                                   <td align="left" cellpadding="0" cellspacing="0" style="text-align: left; padding-bottom: 10px; font-family: Arial, serif; font-size: 18px;">One of the professors has just deleted a meeting with you. Meeting title was "${topic}". It supposed to start at ${dateStart} and end at ${dateEnd}.</td>  '  +
+        '                                 </tr>  '  +
+        '                                 <tr>  '  +
+        '                                   <td align="left" cellpadding="0" cellspacing="0" style="text-align: left; padding-bottom: 30px; font-family: Arial, serif; font-size: 18px;">Try to look for another professor - maybe he has free place in his calendar!</td>  '  +
+        '                                 </tr>  '  +
+        '                                 <tr>  '  +
+        '                                   <td align="right" cellpadding="0" cellspacing="0" style="text-align: right; padding-bottom: 30px; font-family: Arial, serif; font-size: 18px;">Best regards,<br/>  '  +
+        '                                     click&meet service  '  +
+        '                                   </td>  '  +
+        '                                 </tr>  '  +
+        '                         </td>  '  +
+        '                       </tr>  '  +
+        '                   </table>  '  +
+        '           </td>  '  +
+        '       </tr>  '  +
+        '  </table>  ' ;
+}

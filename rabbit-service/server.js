@@ -33,7 +33,7 @@ function amqpConnect() {
                         from: my_mail,
                         to: json.email,
                         subject: 'Click&Meet update',
-                        text: json.text,
+                        html: json.text,
                     }
 
                     transporter.sendMail(mailOptions, (err, info) => {
