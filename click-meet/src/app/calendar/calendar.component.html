@@ -20,7 +20,7 @@
               [attr.rowspan]="reservationsService.reservationRowspan(i,j)"
               class="reservation" [ngClass]="{'busy': reservationsService.reservationBusy(i,j),
               'selected': reservationsService.reservationSelected(i, j)}"
-              (click)="reservationsService.selectForDelete(i, j)">
+              (click)="reservationsService.processReservation(i,j)">
             {{ reservationsService.reservationBusy(i, j) ? "Busy" : reservationsService.getTopic(i,j)}}
           </td>
           <td *ngIf="!reservationsService.reservationExists(i,j)"
@@ -125,6 +125,20 @@
           </li>
         </ul>
         <div *ngIf="calendarService.message() && calendarService.searchingInterest()" class="message" [ngClass]="{'success' : calendarService.success(), 'error': calendarService.error()}">{{calendarService.message()}}</div>
+      </div>
+    </div>
+
+    <div *ngIf="reservationsService.focusedReservation" class="modal" (click)="reservationsService.hideReservation()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-close" (click)="reservationsService.hideReservation()">🗙</div>
+        <h2> Reservation information: </h2>
+        <ul class="reservation-info">
+          <li><b> Professor: </b> {{ reservationsService.focusedReservation.professor?.username }}</li>
+          <li><b> Professor interests: </b>{{ reservationsService.getInterests(reservationsService.focusedReservation.professor) }}</li>
+          <li><b> Day: </b> {{ calendarService.day(reservationsService.focusedReservation.startTime.getDay() - 1) }}</li>
+          <li><b> Time: </b>{{ calendarService.convertDate(reservationsService.focusedReservation.startTime)}} - {{calendarService.convertDate(reservationsService.focusedReservation.endTime)}}</li>
+          <li><b> Topic: </b>{{ reservationsService.focusedReservation.topic }}</li>
+        </ul>
       </div>
     </div>
 

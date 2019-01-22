@@ -33,6 +33,7 @@ export class ReservationService {
   private currentReservationsSubject;
   public currentReservations;
   private newReservation;
+  public focusedReservation;
   public foundProfessors;
 
   constructor(private requestService: RequestService, private calendarService: CalendarService,
@@ -252,6 +253,32 @@ export class ReservationService {
     this.selectionService.resetSelection();
   }
 
+  processReservation(i, j) {
+    if (this.calendarService.deleting()) {
+      this.selectForDelete(i, j);
+    } else if (!this.reservationBusy(i, j)) {
+      this.showReservation(i, j);
+    }
+  }
+
+  showReservation(i, j) {
+    this.focusedReservation = this.currentReservationsSubject.getValue()[i][j];
+    let newUser = new User(this.focusedReservation.professorId, '', '', '', true);
+
+    forkJoin(
+      this.userService.getInformationAboutUsers([newUser]),
+      this.interestService.searchProfessorsInterests([newUser])
+    ).subscribe(resp => {
+      let res = [resp[0], resp[1]].reduce((a, b) => a.map((c, i) => Object.assign({}, c, b[i])));
+      this.focusedReservation.professor = res[0];
+    })
+
+  }
+
+  hideReservation() {
+    this.focusedReservation = null;
+  }
+
   selectForDelete(i, j) {
     if (!this.calendarService.deleting()) {
       return;
@@ -288,6 +315,9 @@ export class ReservationService {
   }
 
   getInterests(prof) {
+    if (!prof) {
+      return;
+    }
     return prof.interests.map(x => x.title).join(', ');
   }
 
