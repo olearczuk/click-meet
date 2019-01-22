@@ -1,5 +1,7 @@
 const Reservation = require('../helpers/db').Reservation;
 const ObjectId = require('mongoose').Types.ObjectId;
+const fetch = require('node-fetch');
+const config = require('config.json');
 
 module.exports = {
     createReservation,
@@ -8,6 +10,7 @@ module.exports = {
     getProfessorsReservations,
     getOwnReservations,
     getBusyProfessors,
+    fetchUserInfo
 }
 
 async function createReservation(body) {
@@ -83,4 +86,24 @@ async function getBusyProfessors(startTime, endTime) {
             { endTime: { $gt: startTime }}
         ]})
     return reservations.map(res => res.professorId);
+}
+
+async function fetchUserInfo(id, cookie, res) {
+
+    let users_url = process.env.USERS_URL || config.usersMicroserviceURL;
+    let url = users_url + "info?ids[]=" + id;
+    
+    let response = await fetch(url, {
+        headers: {
+            cookie: cookie
+        }
+    });
+
+    if (response.status === 400)
+        return res.status(403).json({
+            message: "Such user does not exist"
+        });
+
+    const json = (await response.json())[0];
+    return json;
 }

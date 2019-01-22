@@ -1,7 +1,7 @@
 const reservationService = require('./reservation.service');
-const fetch = require('node-fetch');
 const config = require('config.json');
 const { validationResult } = require('express-validator/check');
+const fetch = require('node-fetch');
 
 module.exports = {
     isLoggedIn,
@@ -61,25 +61,7 @@ function isLoggedInAndParticipant(req, res, next) {
 }
 
 async function isProfessorId(req, res, next) {
-    let professorId = req.body.professorId;
-    let cookie = req.headers.cookie;
-
-    let users_url = process.env.USERS_URL || config.usersMicroserviceURL;
-    let url = users_url + "info?ids[]=" + professorId;
-    
-    let response = await fetch(url, {
-        headers: {
-            cookie: cookie
-        }
-    });
-
-    if (response.status === 400)
-        return res.status(403).json({
-            message: "Given professorId does not belong to professor"
-        });
-
-    const json = (await response.json())[0];
-    
+    let json = await reservationService.fetchUserInfo(req.body.professorId, req.headers.cookie, res);
     if (json.type != 'professor')
         return res.status(403).json({
             message: "Given professorId does not belong to professor"

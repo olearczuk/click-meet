@@ -3,7 +3,7 @@ const q = 'hello';
 
 let aux;
 function amqpConnect() {
-    amqp.connect('amqp://user:pass@rabbit:5672/vhost', (err, conn) => {
+    amqp.connect(process.env.RABBITMQ_URI || config.rabbitmqURI, (err, conn) => {
         if (err) {
             console.log('Failed to connect to rabbitmq', err);
             setTimeout(amqpConnect, 5000);

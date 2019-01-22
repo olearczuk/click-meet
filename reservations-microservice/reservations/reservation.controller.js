@@ -2,6 +2,7 @@ const router = require('express').Router()
 const reservationService = require('./reservation.service');
 const reservationMiddleware = require('./reservation.middleware');
 const { check } = require('express-validator/check')
+const rabbitService = require('../helpers/rabbitmq');
 
 router.put('/student', [
     check('professorId').isMongoId(),
@@ -41,7 +42,16 @@ module.exports = router
 
 function createStudentsReservation(req, res, next) {
     reservationService.createReservation({...req.body, studentId: req.session.user})
-        .then(reservation =>res.status(201).json({ id: reservation.id }))
+        .then(reservation => {
+            reservationService.fetchUserInfo(req.body.professorId, req.headers.cookie, res)
+                .then(response => {
+                    rabbitService.send({
+                        email: response.email,
+                        text: 'Test text for now, new reservation',
+                    })
+                    res.status(201).json({ id: reservation.id });
+                })
+        })
         .catch(err => next(err));
 }
 
@@ -72,7 +82,19 @@ function getReservation(req, res, next) {
 
 function deleteReservation(req, res, next) {
     reservationService.deleteReservation(req.params.id)
-        .then(reservation => res.status(200).json({}))
+        .then(reservation => {
+            if (reservation.studentId) {
+                reservationService.fetchUserInfo(reservation.studentId, req.headers.cookie, res)
+                .then(response => {
+                    rabbitService.send({
+                        email: response.email,
+                        text: 'Test text for now, deleted reservation',
+                    })
+                    res.status(201).json({});
+                })
+            } else
+                res.status(200).json({})
+        })
         .catch(err => next(err));
 }
 
