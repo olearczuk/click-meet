@@ -47,8 +47,10 @@ function createStudentsReservation(req, res, next) {
                 .then(response => {
                     rabbitService.send({
                         email: response.email,
-                        text: 'Test text for now, new reservation',
-                    })
+                        text: `Hello ${response.username}! One of the students has just arranged a meeting with you. \
+                               Meeting title is "${req.body.title}". It starts at ${req.body.startTime} and ends at \
+                               ${req.body.endTime}. If you cannot participate delete the meeting in your calendar.`
+                    });
                     res.status(201).json({ id: reservation.id });
                 })
         })
@@ -88,8 +90,10 @@ function deleteReservation(req, res, next) {
                 .then(response => {
                     rabbitService.send({
                         email: response.email,
-                        text: 'Test text for now, deleted reservation',
-                    })
+                        text: `Hello ${response.username}! One of the professors has just deleted a meeting with you. \
+                               Meeting title was "${req.body.title}". It supposed to start at ${req.body.startTime} and \ 
+                               end at ${req.body.endTime}.`
+                    });
                     res.status(201).json({});
                 })
             } else
