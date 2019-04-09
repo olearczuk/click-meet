@@ -16,8 +16,6 @@ When all containers are ready, go to localhost:8090.
 | :--: |
 | *Specifying intersts* |
 | ![Looking for available professors](pics/available_professors.png) |
-| :--: |
 | *Looking for available professors* |
 | ![Reservation notification](pics/reservation_notification.png) |
-| :--: |
 | *Reservation notification* |
