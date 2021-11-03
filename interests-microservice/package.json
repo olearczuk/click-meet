@@ -23,7 +23,7 @@
     "redis": "^2.8.0",
     "rootpath": "^0.1.2",
     "sequelize": "^4.42.0",
-    "validator": "^10.9.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.9"
