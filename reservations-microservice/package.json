@@ -20,7 +20,7 @@
     "express-session": "^1.15.3",
     "express-validator": "^5.3.1",
     "mongoose": "^5.4.0",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.7",
     "redis": "^2.8.0",
     "rootpath": "^0.1.2",
     "validator": "^10.9.0"
